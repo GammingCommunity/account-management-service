@@ -1,8 +1,9 @@
 /node_modules
-/public/hot
-/public/storage
-/storage/*.key
+/public
 /vendor
+/storage
+/tests
+/bootstrap
 .env
 .env.backup
 .phpunit.result.cache
