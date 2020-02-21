@@ -5,9 +5,8 @@ namespace App\GraphQL\Queries;
 use App\Account;
 use App\GraphQL\Entities\Result\LoggingResult;
 use GraphQL\Type\Definition\ResolveInfo;
-use App\Enums\LoggingResultStatus;
+use App\Enums\ResultEnums\LoggingResultStatus;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use Browser;
 use App\Helpers\JsonWebToken;
 
 class Login

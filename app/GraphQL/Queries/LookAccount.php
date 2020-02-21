@@ -5,10 +5,10 @@ namespace App\GraphQL\Queries;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use App\AccountRelationship;
-use App\AccountRelationshipType;
-use App\AccountPrivacyType;
+use App\Enums\DbEnums\AccountRelationshipType;
+use App\Enums\DbEnums\AccountPrivacyType;
 use App\Account;
-use App\Enums\AccountLookingResultStatus;
+use App\Enums\ResultEnums\AccountLookingResultStatus;
 use App\GraphQL\Entities\Result\AccountLookingResult;
 
 class LookAccount
@@ -28,19 +28,19 @@ class LookAccount
 
 		if ($rootValue['verified_account']) {
 			$lookingAccountId = $args['id'] ?? $rootValue['verified_account']->id;
-			$account = $rootValue['verified_account'];
+			$currentAccount = $rootValue['verified_account'];
 
-			if ($account) {
-				if ($account->id === $lookingAccountId) {
-					$result->account = $account;
+			if ($currentAccount) {
+				if ($currentAccount->id === $lookingAccountId) {
+					$result->account = $currentAccount;
 					$result->relationship = AccountRelationshipType::SELF;
 				} else {
 					$lookingAccount = Account::find($lookingAccountId);
 					if ($lookingAccount) {
-						$relasitonship1 = AccountRelationship::where('sender_account_id', $account->id)->where('receiver_account_id', $lookingAccount->id)->first();
+						$relasitonship1 = AccountRelationship::where('sender_account_id', $currentAccount->id)->where('receiver_account_id', $lookingAccount->id)->first();
 						$relasitonship2 = null;
 						if (!$relasitonship1) {
-							$relasitonship2 = AccountRelationship::where('sender_account_id', $lookingAccount->id)->where('receiver_account_id', $account->id)->first();
+							$relasitonship2 = AccountRelationship::where('sender_account_id', $lookingAccount->id)->where('receiver_account_id', $currentAccount->id)->first();
 						}
 
 						$lookingAccount->login_name = null;

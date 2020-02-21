@@ -4,7 +4,7 @@ namespace App\GraphQL\Entities\Result;
 
 use App\Account;
 use App\AccountRelationshipType;
-use App\Enums\AccountLookingResultStatus;
+use App\Enums\ResultEnums\AccountLookingResultStatus;
 
 class AccountLookingResult
 {

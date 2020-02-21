@@ -6,7 +6,7 @@ use App\AccountInfoBirthMonth;
 use App\AccountInfoBirthYear;
 use App\AccountInfoEmail;
 use App\AccountInfoPhone;
-use App\Enums\AccountEditingResultStatus;
+use App\Enums\ResultEnums\AccountEditingResultStatus;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use App\GraphQL\Entities\Input\AccountBirthMonthInput;
@@ -15,7 +15,6 @@ use App\GraphQL\Entities\Input\AccountEmailInput;
 use App\GraphQL\Entities\Input\AccountPhoneInput;
 use App\GraphQL\Entities\Input\AccountSettingInput;
 use App\GraphQL\Entities\Result\AccountEditingResult;
-use App\GraphQL\Entities\Result\BooleanResult;
 
 class EditAccount
 {

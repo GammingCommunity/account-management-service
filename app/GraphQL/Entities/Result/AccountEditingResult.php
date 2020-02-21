@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Entities\Result;
 
-use App\Enums\AccountEditingResultStatus;
+use App\Enums\ResultEnums\AccountEditingResultStatus;
 
 class AccountEditingResult
 {

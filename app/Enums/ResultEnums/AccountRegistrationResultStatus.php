@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Enums;
+namespace App\Enums\ResultEnums;
 
-use App\Enums\AncestorResultEnum;
+use App\Enums\ResultEnums\AncestorResultEnum;
 
 final class AccountRegistrationResultStatus extends AncestorResultEnum{
 	const NAMESAKE = 1;

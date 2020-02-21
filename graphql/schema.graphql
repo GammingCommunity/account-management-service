@@ -11,7 +11,8 @@ type Query {
 }
 
 type Mutation {
-    editAccount(account: AccountEditingInput!): AccountEditingResult! @authenticate
+    editAccount(account: AccountEditingInput!): AccountEditingResult!
+        @authenticate
     register(account: AccountRegistrationInput!): AccountRegistrationResult!
 }
 
@@ -53,10 +54,10 @@ input AccountBirthMonthInput {
     account_privacy_type_id: AccountPrivacyType
 }
 
-type AccountLookingResult{
-	account: LookedAccount
-	relationship: AccountRelationShipType
-	status: AccountLookingResultStatus!
+type AccountLookingResult {
+    account: LookedAccount
+    relationship: AccountRelationShipType
+    status: AccountLookingResultStatus!
 }
 
 type LookedAccount {
@@ -108,8 +109,6 @@ type AccountBirthYear {
     account_privacy_type_id: AccountPrivacyType
 }
 
-
-
 type AccountSetting {
     anonymous: Boolean!
 }
@@ -128,7 +127,7 @@ type AccountRegistrationResult {
     token: String
     status: AccountRegistrationResultStatus!
     account: Account
-	describe: String
+    describe: String
 }
 
 type AccountEditingResult {
@@ -184,5 +183,5 @@ enum AccountPrivacyType {
 enum AccountLookingResultStatus {
     FAIL @enum(value: -1)
     SUCCESS @enum(value: 0)
-	ACC_NOT_FOUND @enum(value: 1)
+    ACC_NOT_FOUND @enum(value: 1)
 }

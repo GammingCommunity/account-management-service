@@ -4,7 +4,7 @@ namespace App\GraphQL\Mutations;
 
 use App\Account;
 use App\AccountSetting;
-use App\Enums\AccountRegistrationResultStatus;
+use App\Enums\ResultEnums\AccountRegistrationResultStatus;
 use App\GraphQL\Entities\Result\AccountRegistrationResult;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;

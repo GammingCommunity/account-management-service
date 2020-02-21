@@ -3,7 +3,7 @@
 namespace App\GraphQL\Entities\Result;
 
 use App\Account;
-use App\Enums\AccountRegistrationResultStatus;
+use App\Enums\ResultEnums\AccountRegistrationResultStatus;
 
 class AccountRegistrationResult
 {

@@ -3,7 +3,7 @@
 namespace App\GraphQL\Entities\Result;
 
 use App\Account;
-use App\Enums\LoggingResultStatus;
+use App\Enums\ResultEnums\LoggingResultStatus;
 
 class LoggingResult
 {
