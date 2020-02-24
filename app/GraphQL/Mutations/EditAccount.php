@@ -49,76 +49,76 @@ class EditAccount
 			if ($birthMonth) {
 				if ($account->birthMonth) {
 					$account->birthMonth->month = $birthMonth->month;
-					$account->birthMonth->account_privacy_type_id = $birthMonth->privacyTypeId;
+					$account->birthMonth->privacy_type = $birthMonth->privacyType;
 					if (!$account->birthMonth->save()) {
-						$result->describe = 'Unable to save account birth month';
+						$result->describe = 'Unable to save account birth month.';
 					}
 				} else {
 					$newBirthMonth = AccountInfoBirthMonth::create([
 						'month' => $birthMonth->month,
-						'account_privacy_type_id' => $birthMonth->privacyTypeId
+						'privacy_type' => $birthMonth->privacyType
 					]);
 					if ($newBirthMonth) {
 						$account->account_info_birth_month_id = $newBirthMonth->id;
 					} else {
-						$result->describe = 'Unable to create account birth month';
+						$result->describe = 'Unable to create account birth month.';
 					}
 				}
 			}
 			if ($birthYear) {
 				if ($account->birthYear) {
 					$account->birthYear->year = $birthYear->year;
-					$account->birthYear->account_privacy_type_id = $birthYear->privacyTypeId;
+					$account->birthYear->privacy_type = $birthYear->privacyType;
 					if (!$account->birthYear->save()) {
-						$result->describe = 'Unable to save account birth year';
+						$result->describe = 'Unable to save account birth year.';
 					}
 				} else {
 					$newBirthYear = AccountInfoBirthYear::create([
 						'year' => $birthYear->year,
-						'account_privacy_type_id' => $birthYear->privacyTypeId
+						'privacy_type' => $birthYear->privacyType
 					]);
 					if ($newBirthYear) {
 						$account->account_info_birth_year_id = $newBirthYear->id;
 					} else {
-						$result->describe = 'Unable to create account birth year';
+						$result->describe = 'Unable to create account birth year.';
 					}
 				}
 			}
 			if ($email) {
 				if ($account->email) {
 					$account->email->email = $email->email;
-					$account->email->account_privacy_type_id = $email->privacyTypeId;
+					$account->email->privacy_type = $email->privacyType;
 					if (!$account->email->save()) {
-						$result->describe = 'Unable to save account email';
+						$result->describe = 'Unable to save account email.';
 					}
 				} else {
 					$newEmail = AccountInfoEmail::create([
 						'email' => $email->email,
-						'account_privacy_type_id' => $email->privacyTypeId
+						'privacy_type' => $email->privacyType
 					]);
 					if ($newEmail) {
 						$account->account_info_email_id = $newEmail->id;
 					} else {
-						$result->describe = 'Unable to create account email';
+						$result->describe = 'Unable to create account email.';
 					}
 				}
 			}
 			if ($phone) {
 				if ($account->phone) {
 					$account->phone->phone = $phone->phone;
-					$account->phone->account_privacy_type_id = $phone->privacyTypeId;
+					$account->phone->privacy_type = $phone->privacyType;
 					if (!$account->phone->save()) {
-						$result->describe = 'Unable to save account phone';
+						$result->describe = 'Unable to save account phone.';
 					}
 				} else {
 					$newPhone = AccountInfoPhone::create([
 						'phone' => $phone->phone,
-						'account_privacy_type_id' => $phone->privacyTypeId
+						'privacy_type' => $phone->privacyType
 					]);
 					if ($newPhone) {
 						$account->account_info_phone_id = $newPhone->id;
 					} else {
-						$result->describe = 'Unable to create account phone';
+						$result->describe = 'Unable to create account phone.';
 					}
 				}
 			}
@@ -126,17 +126,17 @@ class EditAccount
 				if ($account->setting) {
 					$account->setting->anonymous = $setting->anonymous;
 					if (!$account->setting->save()) {
-						$result->describe = 'Unable to save account setting';
+						$result->describe = 'Unable to save account setting.';
 					}
 				} else {
-					$result->describe = 'The account setting does not exist';
+					$result->describe = 'The account setting does not exist.';
 				}
 			}
 
 			if ($account->save()) {
 				$result->status = AccountEditingResultStatus::SUCCESS;
 			} else {
-				$result->describe = 'Unable to save account';
+				$result->describe = 'Unable to save account.';
 				//must delete ralationship with account table if it unable to save
 				if(isset($newBirthMonth) && $newBirthMonth){
 					$newBirthMonth->delete();

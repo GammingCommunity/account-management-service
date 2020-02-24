@@ -4,11 +4,12 @@ namespace App\GraphQL\Mutations;
 
 use App\Account;
 use App\AccountSetting;
+use App\Common\AuthService\AuthServiceConnection;
+use App\Common\AuthService\AuthServiceResponseStatus;
 use App\Enums\ResultEnums\AccountRegistrationResultStatus;
 use App\GraphQL\Entities\Result\AccountRegistrationResult;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use App\Helpers\JsonWebToken;
 
 class Register
 {
@@ -42,17 +43,41 @@ class Register
 				]);
 
 				if ($createdAccount) {
-					$jwtToken = JsonWebToken::encode($createdAccount->id);
-					$result->status = AccountRegistrationResultStatus::SUCCESS;
-					$result->token = $jwtToken;
-					$result->account = Account::find($createdAccount->id);
+					$createdAccount = Account::find($createdAccount->id);
+
+					if($createdAccount){
+						$authServiceResponse = AuthServiceConnection::request('POST', '/register', [
+							'headers' => [
+								'secret_key' => env('SECRET_KEY'),
+							],
+							'form_params' => [
+								'username' => $createdAccount->login_name,
+								'pwd' => $createdAccount->password,
+								'id' => $createdAccount->id,
+								'role' => $createdAccount->role
+							]
+						]);
+	
+						if($authServiceResponse->status === AuthServiceResponseStatus::SUCCESSFUL){
+							$result->status = AccountRegistrationResultStatus::SUCCESS;
+							$result->token = $authServiceResponse->data;
+							$result->account = $createdAccount;
+						} else {
+							$result->describe = json_encode([
+								'status' => $authServiceResponse->status,
+								'describe' => $authServiceResponse->describe
+							], JSON_PRETTY_PRINT);
+						}
+					} else {
+						$result->describe = '*Unable to select account.';
+					}
 				} else {
-					$result->describe = 'Unable to create account';
+					$result->describe = 'Unable to create account.';
 					//must delete account setting if unable to create account
 					$accountSetting->delete();
 				}
 			} else {
-				$result->describe = 'Unable to create account setting';
+				$result->describe = 'Unable to create account setting.';
 			}
 		}
 

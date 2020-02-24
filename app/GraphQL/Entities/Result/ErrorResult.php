@@ -18,8 +18,13 @@ class ErrorResult
 	}
 
 	public static function exit(string $text){
-		header('Content-Type: application/json');
-		exit(json_encode(new ErrorResult($text)));
+		http_response_code(500);
+		if (config('app.debug')) {
+			header('Content-Type: application/json');
+			exit(json_encode(new ErrorResult($text)));
+		} else {
+			exit;
+		}
 	}
 }
 

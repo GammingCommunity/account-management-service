@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Entities\Input;
 
-use App\AccountPrivacyType;
+use App\Enums\DbEnums\AccountPrivacyType;
 
 class AccountBirthMonthInput
 {
@@ -14,7 +14,7 @@ class AccountBirthMonthInput
 	/**
 	 * @var int
 	 */
-	public $privacyTypeId;
+	public $privacyType;
 
 	/**
 	 * @param array $args
@@ -22,7 +22,7 @@ class AccountBirthMonthInput
 	public function __construct(array $args)
 	{
 		$birthMonth = $args['account']['birth_month'];
-		$this->privacyTypeId = $birthMonth['account_privacy_type_id'] ?? AccountPrivacyType::PUBLIC;
+		$this->privacyType = $birthMonth['privacy_type'] ?? AccountPrivacyType::PUBLIC;
 		$this->month = $birthMonth['month'];
 	}
 }

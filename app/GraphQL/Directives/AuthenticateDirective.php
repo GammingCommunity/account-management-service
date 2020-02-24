@@ -3,6 +3,9 @@
 namespace App\GraphQL\Directives;
 
 use App\Account;
+use App\Common\AuthService\AuthServiceConnection;
+use App\Common\AuthService\AuthServiceJwtPayload;
+use App\Common\AuthService\AuthServiceResponseStatus;
 use Closure;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Schema\Directives\BaseDirective;
@@ -10,7 +13,6 @@ use Nuwave\Lighthouse\Schema\Values\FieldValue;
 use Nuwave\Lighthouse\Support\Contracts\FieldMiddleware;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use App\GraphQL\Entities\Result\ErrorResult;
-use App\Helpers\JsonWebToken;
 
 class AuthenticateDirective extends BaseDirective implements FieldMiddleware
 {
@@ -52,15 +54,20 @@ class AuthenticateDirective extends BaseDirective implements FieldMiddleware
 	{
 		$token = request()->header('token');
 		if ($token) {
-			$accountId = JsonWebToken::decode($token);
-			return Account::find($accountId);
-		} else {
-			sleep(2);
-			if (config('app.debug')) {
-				ErrorResult::exit('missing the token');
+			$authServiceResponse = AuthServiceConnection::request('GET', '/auth', [
+				'headers' => ['token' => $token]
+			]);
+			if ($authServiceResponse->status === AuthServiceResponseStatus::SUCCESSFUL) {
+				return Account::find((new AuthServiceJwtPayload($token))->accountId);
 			} else {
-				exit;
+				ErrorResult::exit(json_encode([
+					'status' => $authServiceResponse->status,
+					'describe' => $authServiceResponse->describe
+				], JSON_PRETTY_PRINT));
 			}
+		} else {
+			sleep(1);
+			ErrorResult::exit('Missing the token.');
 		}
 	}
 }

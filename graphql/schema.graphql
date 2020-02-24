@@ -39,19 +39,19 @@ input AccountSettingInput {
 
 input AccountBirthYearInput {
     year: String!
-    account_privacy_type_id: AccountPrivacyType
+    privacy_type: AccountPrivacyType
 }
 input AccountEmailInput {
     email: String!
-    account_privacy_type_id: AccountPrivacyType
+    privacy_type: AccountPrivacyType
 }
 input AccountPhoneInput {
     phone: String!
-    account_privacy_type_id: AccountPrivacyType
+    privacy_type: AccountPrivacyType
 }
 input AccountBirthMonthInput {
     month: String!
-    account_privacy_type_id: AccountPrivacyType
+    privacy_type: AccountPrivacyType
 }
 
 type AccountLookingResult {
@@ -70,8 +70,8 @@ type LookedAccount {
     birth_month: AccountBirthMonth @belongsTo(relation: "birthMonth")
     birth_year: AccountBirthYear @belongsTo(relation: "birthYear")
     setting: AccountSetting @belongsTo(relation: "setting")
-    account_role_id: AccountRole
-    account_status_id: AccountStatus
+    role: AccountRole
+    status: AccountStatus
     updated_at: DateTime
     created_at: DateTime!
 }
@@ -86,27 +86,27 @@ type Account {
     birth_month: AccountBirthMonth @belongsTo(relation: "birthMonth")
     birth_year: AccountBirthYear @belongsTo(relation: "birthYear")
     setting: AccountSetting! @belongsTo(relation: "setting")
-    account_role_id: AccountRole!
-    account_status_id: AccountStatus!
+    role: AccountRole!
+    status: AccountStatus!
     updated_at: DateTime!
     created_at: DateTime!
 }
 
 type AccountEmail {
     email: String!
-    account_privacy_type_id: AccountPrivacyType
+    privacy_type: AccountPrivacyType
 }
 type AccountPhone {
     phone: String!
-    account_privacy_type_id: AccountPrivacyType
+    privacy_type: AccountPrivacyType
 }
 type AccountBirthMonth {
     month: String!
-    account_privacy_type_id: AccountPrivacyType
+    privacy_type: AccountPrivacyType
 }
 type AccountBirthYear {
     year: String!
-    account_privacy_type_id: AccountPrivacyType
+    privacy_type: AccountPrivacyType
 }
 
 type AccountSetting {

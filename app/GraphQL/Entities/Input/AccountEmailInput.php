@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Entities\Input;
 
-use App\AccountPrivacyType;
+use App\Enums\DbEnums\AccountPrivacyType;
 
 class AccountEmailInput
 {
@@ -14,7 +14,7 @@ class AccountEmailInput
 	/**
 	 * @var int
 	 */
-	public $privacyTypeId;
+	public $privacyType;
 
 	/**
 	 * @param array $args
@@ -22,7 +22,7 @@ class AccountEmailInput
 	public function __construct(array $args)
 	{
 		$email = $args['account']['email'];
-		$this->privacyTypeId = $email['account_privacy_type_id'] ?? AccountPrivacyType::PUBLIC;
+		$this->privacyType = $email['privacy_type'] ?? AccountPrivacyType::PUBLIC;
 		$this->email = $email['email'];
 	}
 }

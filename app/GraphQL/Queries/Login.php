@@ -7,7 +7,9 @@ use App\GraphQL\Entities\Result\LoggingResult;
 use GraphQL\Type\Definition\ResolveInfo;
 use App\Enums\ResultEnums\LoggingResultStatus;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use App\Helpers\JsonWebToken;
+use App\GraphQL\Entities\Result\ErrorResult;
+use App\Common\AuthService\AuthServiceConnection;
+use App\Common\AuthService\AuthServiceResponseStatus;
 
 class Login
 {
@@ -22,18 +24,27 @@ class Login
 	 */
 	public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): LoggingResult
 	{
-		$result = new LoggingResult(LoggingResultStatus::WRONG_USERNAME);
-		$account = Account::where('login_name', $args['username'])->first();
+		$result = new LoggingResult();
+		$authServiceResponse = AuthServiceConnection::request('POST', '/login', [
+			'form_params' => [
+				'username' => $args['username'],
+				'pwd' => $args['pwd']
+			]
+		]);
 
-		if ($account && $args['pwd']) {
-			if (password_verify($args['pwd'], $account->password)) {
-				$jwtToken = JsonWebToken::encode($account->id);
-				$result->status = LoggingResultStatus::SUCCESS;
-				$result->token = $jwtToken;
-				$result->account = $account;
-			} else {
-				$result->status = LoggingResultStatus::WRONG_PWD;
-			}
+		if ($authServiceResponse->status === AuthServiceResponseStatus::SUCCESSFUL) {
+			$result->status = LoggingResultStatus::SUCCESS;
+			$result->token = $authServiceResponse->data;
+			$result->account = Account::where('login_name', $args['username'])->first();
+		} else if ($authServiceResponse->status === AuthServiceResponseStatus::WRONG_USERNAME) {
+			$result->status = LoggingResultStatus::WRONG_USERNAME;
+		} else if ($authServiceResponse->status === AuthServiceResponseStatus::WRONG_PWD) {
+			$result->status = LoggingResultStatus::WRONG_PWD;
+		} else {
+			$result->describe = json_encode([
+				'status' => $authServiceResponse->status,
+				'describe' => $authServiceResponse->describe
+			], JSON_PRETTY_PRINT);
 		}
 
 		return $result;
