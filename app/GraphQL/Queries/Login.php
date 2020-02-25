@@ -26,6 +26,9 @@ class Login
 	{
 		$result = new LoggingResult();
 		$authServiceResponse = AuthServiceConnection::request('POST', '/login', [
+			'headers' => [
+				'secret_key' => env('SECRET_KEY')
+			],
 			'form_params' => [
 				'username' => $args['username'],
 				'pwd' => $args['pwd']

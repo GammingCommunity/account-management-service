@@ -48,13 +48,14 @@ class Register
 					if($createdAccount){
 						$authServiceResponse = AuthServiceConnection::request('POST', '/register', [
 							'headers' => [
-								'secret_key' => env('SECRET_KEY'),
+								'secret_key' => env('PRIVATE_KEY'),
 							],
 							'form_params' => [
 								'username' => $createdAccount->login_name,
 								'pwd' => $createdAccount->password,
 								'id' => $createdAccount->id,
-								'role' => $createdAccount->role
+								'role' => $createdAccount->role,
+								'status' => $createdAccount->status
 							]
 						]);
 	

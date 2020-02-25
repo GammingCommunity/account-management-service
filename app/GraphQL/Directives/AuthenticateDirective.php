@@ -55,7 +55,10 @@ class AuthenticateDirective extends BaseDirective implements FieldMiddleware
 		$token = request()->header('token');
 		if ($token) {
 			$authServiceResponse = AuthServiceConnection::request('GET', '/auth', [
-				'headers' => ['token' => $token]
+				'headers' => [
+					'token' => $token,
+					'secret_key' => env('SECRET_KEY')
+				]
 			]);
 			if ($authServiceResponse->status === AuthServiceResponseStatus::SUCCESSFUL) {
 				return Account::find((new AuthServiceJwtPayload($token))->accountId);
