@@ -15,10 +15,10 @@ class AuthServiceConnection
 		if ($res->getStatusCode() === 200) {
 			return new AuthServiceResponse($res->getBody()->getContents());
 		} else {
-			ErrorResult::exit(json_encode([
+			ErrorResult::exit([
 				'response_status' => $res->getStatusCode(),
 				'body' => $res->getBody()->getContents()
-			]), JSON_PRETTY_PRINT);
+			]);
 		}
 	}
 }

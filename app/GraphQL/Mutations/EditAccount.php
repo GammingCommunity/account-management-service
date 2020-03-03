@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Mutations;
 
+use App\Account;
 use App\AccountInfoBirthMonth;
 use App\AccountInfoBirthYear;
 use App\AccountInfoEmail;
@@ -34,6 +35,7 @@ class EditAccount
 		$inputAccount = $args['account'];
 
 		if ($account) {
+
 			$birthMonth = isset($inputAccount['birth_month']) ? new AccountBirthMonthInput($args) : null;
 			$birthYear = isset($inputAccount['birth_year']) ? new AccountBirthYearInput($args) : null;
 			$phone = isset($inputAccount['phone']) ? new AccountPhoneInput($args) : null;
@@ -43,118 +45,190 @@ class EditAccount
 			if (isset($inputAccount['name'])) {
 				$account->name = $inputAccount['name'];
 			}
+			if (isset($inputAccount['avatar_url'])) {
+				$account->avatar_url = $inputAccount['avatar_url'];
+			}
 			if (isset($inputAccount['describe'])) {
 				$account->describe = $inputAccount['describe'];
 			}
-			if ($birthMonth) {
-				if ($account->birthMonth) {
-					$account->birthMonth->month = $birthMonth->month;
-					$account->birthMonth->privacy_type = $birthMonth->privacyType;
-					if (!$account->birthMonth->save()) {
-						$result->describe = 'Unable to save account birth month.';
-					}
-				} else {
-					$newBirthMonth = AccountInfoBirthMonth::create([
-						'month' => $birthMonth->month,
-						'privacy_type' => $birthMonth->privacyType
-					]);
-					if ($newBirthMonth) {
-						$account->account_info_birth_month_id = $newBirthMonth->id;
-					} else {
-						$result->describe = 'Unable to create account birth month.';
-					}
-				}
-			}
-			if ($birthYear) {
-				if ($account->birthYear) {
-					$account->birthYear->year = $birthYear->year;
-					$account->birthYear->privacy_type = $birthYear->privacyType;
-					if (!$account->birthYear->save()) {
-						$result->describe = 'Unable to save account birth year.';
-					}
-				} else {
-					$newBirthYear = AccountInfoBirthYear::create([
-						'year' => $birthYear->year,
-						'privacy_type' => $birthYear->privacyType
-					]);
-					if ($newBirthYear) {
-						$account->account_info_birth_year_id = $newBirthYear->id;
-					} else {
-						$result->describe = 'Unable to create account birth year.';
-					}
-				}
-			}
-			if ($email) {
-				if ($account->email) {
-					$account->email->email = $email->email;
-					$account->email->privacy_type = $email->privacyType;
-					if (!$account->email->save()) {
-						$result->describe = 'Unable to save account email.';
-					}
-				} else {
-					$newEmail = AccountInfoEmail::create([
-						'email' => $email->email,
-						'privacy_type' => $email->privacyType
-					]);
-					if ($newEmail) {
-						$account->account_info_email_id = $newEmail->id;
-					} else {
-						$result->describe = 'Unable to create account email.';
-					}
-				}
-			}
-			if ($phone) {
-				if ($account->phone) {
-					$account->phone->phone = $phone->phone;
-					$account->phone->privacy_type = $phone->privacyType;
-					if (!$account->phone->save()) {
-						$result->describe = 'Unable to save account phone.';
-					}
-				} else {
-					$newPhone = AccountInfoPhone::create([
-						'phone' => $phone->phone,
-						'privacy_type' => $phone->privacyType
-					]);
-					if ($newPhone) {
-						$account->account_info_phone_id = $newPhone->id;
-					} else {
-						$result->describe = 'Unable to create account phone.';
-					}
-				}
-			}
-			if ($setting) {
-				if ($account->setting) {
-					$account->setting->anonymous = $setting->anonymous;
-					if (!$account->setting->save()) {
-						$result->describe = 'Unable to save account setting.';
-					}
-				} else {
-					$result->describe = 'The account setting does not exist.';
-				}
-			}
 
-			if ($account->save()) {
+			$booleanResult = true;
+			$booleanResult &= $this->updateBirthMonth($account, $birthMonth, $result);
+			$booleanResult &= $this->updateBirthYear($account, $birthYear, $result);
+			$booleanResult &= $this->updateEmail($account, $email, $result);
+			$booleanResult &= $this->updatePhone($account, $phone, $result);
+			$booleanResult &= $this->updateSetting($account, $setting, $result);
+			$booleanResult &= $account->save();
+
+			if ($booleanResult) {
 				$result->status = AccountEditingResultStatus::SUCCESS;
 			} else {
 				$result->describe = 'Unable to save account.';
-				//must delete ralationship with account table if it unable to save
-				if(isset($newBirthMonth) && $newBirthMonth){
-					$newBirthMonth->delete();
-				}
-				if(isset($newBirthYear) && $newBirthYear){
-					$newBirthYear->delete();
-				}
-				if(isset($newPhone) && $newPhone){
-					$newPhone->delete();
-				}
-				if(isset($newEmail) && $newEmail){
-					$newEmail->delete();
-				}
+				// //must delete ralationship with account table if it unable to save
+				// if (isset($newBirthMonth) && $newBirthMonth) {
+				// 	$newBirthMonth->delete();
+				// }
+				// if (isset($newBirthYear) && $newBirthYear) {
+				// 	$newBirthYear->delete();
+				// }
+				// if (isset($newPhone) && $newPhone) {
+				// 	$newPhone->delete();
+				// }
+				// if (isset($newEmail) && $newEmail) {
+				// 	$newEmail->delete();
+				// }
 			}
 		} else {
 			$result->status = AccountEditingResultStatus::ACC_NOT_FOUND;
 		}
 
 		return $result;
+	}
+
+	protected function updateBirthMonth(Account &$account, $birthMonth, AccountEditingResult &$accountEditingResult): bool
+	{
+		$booleanResult = true;
+
+		if ($birthMonth) {
+			if ($account->birthMonth) {
+				$account->birthMonth->month = $birthMonth->month;
+				$account->birthMonth->privacy_type = $birthMonth->privacyType;
+
+				$booleanResult = $account->birthMonth->save();
+				if (!$booleanResult) {
+					$accountEditingResult->describe = 'Unable to save account birth month.';
+				}
+			} else {
+				$newBirthMonth = AccountInfoBirthMonth::create([
+					'month' => $birthMonth->month,
+					'privacy_type' => $birthMonth->privacyType
+				]);
+				if ($newBirthMonth) {
+					$account->account_info_birth_month_id = $newBirthMonth->id;
+				} else {
+					$booleanResult = false;
+					$accountEditingResult->describe = 'Unable to create account birth month.';
+				}
+			}
+		}
+
+		return $booleanResult;
+	}
+
+	protected function updateBirthYear(Account &$account, $birthYear, AccountEditingResult &$accountEditingResult): bool
+	{
+		$booleanResult = true;
+
+		if ($birthYear) {
+			if ($account->birthYear) {
+				$account->birthYear->year = $birthYear->year;
+				$account->birthYear->privacy_type = $birthYear->privacyType;
+
+				$booleanResult = $account->birthYear->save();
+				if (!$booleanResult) {
+					$accountEditingResult->describe = 'Unable to save account birth year.';
+				}
+			} else {
+				$newBirthYear = AccountInfoBirthYear::create([
+					'year' => $birthYear->year,
+					'privacy_type' => $birthYear->privacyType
+				]);
+
+				if ($newBirthYear) {
+					$booleanResult = true;
+					$account->account_info_birth_year_id = $newBirthYear->id;
+				} else {
+					$booleanResult = false;
+					$accountEditingResult->describe = 'Unable to create account birth year.';
+				}
+			}
+		}
+
+		return $booleanResult;
+	}
+
+	protected function updateEmail(Account &$account, $email, AccountEditingResult &$accountEditingResult): bool
+	{
+		$booleanResult = true;
+
+		if ($email) {
+			if ($account->email) {
+				$account->email->email = $email->email;
+				$account->email->privacy_type = $email->privacyType;
+
+				$booleanResult = $account->email->save();
+				if (!$booleanResult) {
+					$accountEditingResult->describe = 'Unable to save account email.';
+				}
+			} else {
+				$newEmail = AccountInfoEmail::create([
+					'email' => $email->email,
+					'privacy_type' => $email->privacyType
+				]);
+
+				if ($newEmail) {
+					$booleanResult = true;
+					$account->account_info_email_id = $newEmail->id;
+				} else {
+					$booleanResult = false;
+					$accountEditingResult->describe = 'Unable to create account email.';
+				}
+			}
+		}
+
+		return $booleanResult;
+	}
+
+	protected function updatePhone(Account &$account, $phone, AccountEditingResult &$accountEditingResult): bool
+	{
+		$booleanResult = true;
+
+		if ($phone) {
+			if ($account->phone) {
+				$account->phone->phone = $phone->phone;
+				$account->phone->privacy_type = $phone->privacyType;
+
+				$booleanResult = $account->phone->save();
+				if (!$booleanResult) {
+					$accountEditingResult->describe = 'Unable to save account phone.';
+				}
+			} else {
+				$newPhone = AccountInfoPhone::create([
+					'phone' => $phone->phone,
+					'privacy_type' => $phone->privacyType
+				]);
+
+				if ($newPhone) {
+					$booleanResult = true;
+					$account->account_info_phone_id = $newPhone->id;
+				} else {
+					$booleanResult = false;
+					$accountEditingResult->describe = 'Unable to create account phone.';
+				}
+			}
+		}
+
+		return $booleanResult;
+	}
+
+	protected function updateSetting(Account &$account, $setting, AccountEditingResult &$accountEditingResult): bool
+	{
+		$booleanResult = true;
+
+		if ($setting) {
+			if ($account->setting) {
+				$account->setting->anonymous = $setting->anonymous;
+
+				$booleanResult = $account->setting->save();
+				if (!$booleanResult) {
+					$accountEditingResult->describe = 'Unable to save account setting.';
+				}
+			} else {
+				$booleanResult = false;
+				$accountEditingResult->describe = 'The account setting does not exist.';
+			}
+		}
+
+		return $booleanResult;
 	}
 }

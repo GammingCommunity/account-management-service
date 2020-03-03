@@ -23,7 +23,7 @@ class AccountRegistrationResult
 	public $account;
 
 	/**
-	 * @var string
+	 * @var string[]
 	 */
 	public $describe;
 
@@ -31,9 +31,9 @@ class AccountRegistrationResult
 	 * @param int $status
 	 * @param string $token
 	 * @param Account $account
-	 * @param string $describe
+	 * @param array $describe
 	 */
-	public function __construct(int $status = AccountRegistrationResultStatus::FAIL, string $token = null, Account $account = null, string $describe = null)
+	public function __construct(int $status = AccountRegistrationResultStatus::FAIL, string $token = null, Account $account = null, array $describe = null)
 	{
 		$this->status = $status;
 		$this->token = $token;

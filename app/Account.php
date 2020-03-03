@@ -9,7 +9,7 @@ class Account extends Model
 {
 	protected $table = 'account';
 	protected $hidden = ['password'];
-	protected $fillable = ['name', 'login_name', 'password', 'describe', 'account_setting_id'];
+	protected $fillable = ['name', 'describe', 'account_setting_id'];
 
 	public function birthMonth(): BelongsTo
 	{

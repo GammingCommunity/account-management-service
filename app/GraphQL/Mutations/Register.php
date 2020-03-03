@@ -27,59 +27,52 @@ class Register
 		$result = new AccountRegistrationResult();
 		$inputAccount = $args['account'];
 
-		$acc = Account::where('login_name', $inputAccount['login_name'])->first(['id']);
-		if ($acc) {
-			$result->status = AccountRegistrationResultStatus::NAMESAKE;
-		} else {
-			$accountSetting = AccountSetting::createDefaultSetting();
+		$accountSetting = AccountSetting::createDefaultSetting();
 
-			if ($accountSetting) {
-				$createdAccount = Account::create([
-					'login_name' => $inputAccount['login_name'],
-					'name' => $inputAccount['name'],
-					'describe' => $inputAccount['describe'] ?? '',
-					'password' => password_hash($inputAccount['password'], PASSWORD_BCRYPT, ['cost' => 10]),
-					'account_setting_id' => $accountSetting->id,
-				]);
+		if ($accountSetting) {
+			$createdAccount = Account::create([
+				'name' => $inputAccount['name'],
+				'describe' => $inputAccount['describe'] ?? '',
+				'account_setting_id' => $accountSetting->id,
+			]);
+
+			if ($createdAccount) {
+				$createdAccount = Account::find($createdAccount->id);
 
 				if ($createdAccount) {
-					$createdAccount = Account::find($createdAccount->id);
+					$authServiceResponse = AuthServiceConnection::request('POST', '/register', [
+						'headers' => [
+							'secret_key' => env('PRIVATE_KEY'),
+						],
+						'form_params' => [
+							'username' => $inputAccount['login_name'],
+							'pwd' => $inputAccount['password'],
+							'id' => $createdAccount->id,
+							'role' => $createdAccount->role,
+							'status' => $createdAccount->status
+						]
+					]);
 
-					if($createdAccount){
-						$authServiceResponse = AuthServiceConnection::request('POST', '/register', [
-							'headers' => [
-								'secret_key' => env('PRIVATE_KEY'),
-							],
-							'form_params' => [
-								'username' => $createdAccount->login_name,
-								'pwd' => $createdAccount->password,
-								'id' => $createdAccount->id,
-								'role' => $createdAccount->role,
-								'status' => $createdAccount->status
-							]
-						]);
-	
-						if($authServiceResponse->status === AuthServiceResponseStatus::SUCCESSFUL){
-							$result->status = AccountRegistrationResultStatus::SUCCESS;
-							$result->token = $authServiceResponse->data;
-							$result->account = $createdAccount;
-						} else {
-							$result->describe = json_encode([
-								'status' => $authServiceResponse->status,
-								'describe' => $authServiceResponse->describe
-							], JSON_PRETTY_PRINT);
-						}
+					if ($authServiceResponse->status === AuthServiceResponseStatus::SUCCESSFUL) {
+						$result->status = AccountRegistrationResultStatus::SUCCESS;
+						$result->token = $authServiceResponse->data;
+						$result->account = $createdAccount;
 					} else {
-						$result->describe = '*Unable to select account.';
+						$result->describe = [
+							"status -> {$authServiceResponse->status}",
+							"describe -> {$authServiceResponse->describe}"
+						];
 					}
 				} else {
-					$result->describe = 'Unable to create account.';
-					//must delete account setting if unable to create account
-					$accountSetting->delete();
+					$result->describe = '*Unable to select account.';
 				}
 			} else {
-				$result->describe = 'Unable to create account setting.';
+				$result->describe = 'Unable to create account.';
+				//must delete account setting if unable to create account
+				$accountSetting->delete();
 			}
+		} else {
+			$result->describe = 'Unable to create account setting.';
 		}
 
 		return $result;

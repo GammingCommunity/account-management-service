@@ -10,34 +10,35 @@ class ErrorResult
 	public $error;
 
 	/**
-	 * @param string $describe
+	 * @param mixed $describe
 	 */
-	public function __construct(string $describe)
+	public function __construct($describe)
 	{
 		$this->error = new ErrorInfo($describe);
 	}
 
-	public static function exit(string $text){
+	public static function exit($content)
+	{
 		http_response_code(500);
-		if (config('app.debug')) {
-			header('Content-Type: application/json');
-			exit(json_encode(new ErrorResult($text)));
-		} else {
-			exit;
+		header('Content-Type: application/json');
+		if (!config('app.debug')) {
+			$content = gettype($content) === 'string' ? hash('sha256', $content) : null;
 		}
+		exit(json_encode(new ErrorResult($content)));
 	}
 }
 
-class ErrorInfo{
+class ErrorInfo
+{
 	/**
-	 * @var string
+	 * @var mixed
 	 */
 	public $describe;
 
 	/**
-	 * @param string $describe
+	 * @param mixed $describe
 	 */
-	public function __construct(string $describe)
+	public function __construct($describe)
 	{
 		$this->describe = $describe;
 	}

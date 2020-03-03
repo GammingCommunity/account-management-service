@@ -26,6 +26,7 @@ input AccountRegistrationInput {
 input AccountEditingInput {
     name: String
     describe: String
+	avatar_url: String
     email: AccountEmailInput
     phone: AccountPhoneInput
     birth_month: AccountBirthMonthInput
@@ -62,8 +63,8 @@ type AccountLookingResult {
 
 type LookedAccount {
     id: Int!
-    login_name: String
     name: String!
+	avatar_url: String
     describe: String
     email: AccountEmail @belongsTo(relation: "email")
     phone: AccountPhone @belongsTo(relation: "phone")
@@ -78,8 +79,8 @@ type LookedAccount {
 
 type Account {
     id: Int!
-    login_name: String!
     name: String!
+	avatar_url: String
     describe: String
     email: AccountEmail @belongsTo(relation: "email")
     phone: AccountPhone @belongsTo(relation: "phone")
@@ -121,13 +122,14 @@ type LoggingResult {
     token: String
     status: LoggingResultStatus!
     account: Account
+	describe: [String]
 }
 
 type AccountRegistrationResult {
     token: String
     status: AccountRegistrationResultStatus!
     account: Account
-    describe: String
+    describe: [String]
 }
 
 type AccountEditingResult {

@@ -63,13 +63,13 @@ class AuthenticateDirective extends BaseDirective implements FieldMiddleware
 			if ($authServiceResponse->status === AuthServiceResponseStatus::SUCCESSFUL) {
 				return Account::find((new AuthServiceJwtPayload($token))->accountId);
 			} else {
-				ErrorResult::exit(json_encode([
+				ErrorResult::exit([
 					'status' => $authServiceResponse->status,
 					'describe' => $authServiceResponse->describe
-				], JSON_PRETTY_PRINT));
+				]);
 			}
 		} else {
-			sleep(1);
+			sleep(2);
 			ErrorResult::exit('Missing the token.');
 		}
 	}
