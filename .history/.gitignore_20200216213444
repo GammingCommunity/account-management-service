@@ -4,7 +4,6 @@
 /storage
 /tests
 /bootstrap
-/history
 .env
 .env.backup
 .phpunit.result.cache
