@@ -1,0 +1,167 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-01-01 13:00:00`."
+scalar DateTime
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"A date string with format `Y-m-d`, e.g. `2011-05-23`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+type Query {
+    lookAccount(ids: [Int]): [AccountLookingResult]! @authenticate
+    getThisAccount: Account! @authenticate
+    login(username: String!, pwd: String!): LoggingResult!
+    getFriends: [FriendGettingResult]! @authenticate
+    getFriendRequests: [FriendRequestingResult]! @authenticate
+}
+
+type Mutation {
+    editThisAccount(account: AccountEditingInput!): AccountEditingResult!
+        @authenticate
+    register(account: AccountRegistrationInput!): AccountRegistrationResult!
+	sendFriendRequest(receiver_id: Int!): Boolean! @authenticate
+	confirmFriendRequest(sender_id: Int!): Boolean! @authenticate
+}
+
+input AccountRegistrationInput {
+    login_name: String!
+    name: String!
+    describe: String
+    password: String!
+}
+
+input AccountEditingInput {
+    name: String
+    describe: String
+    avatar_url: String
+    email: String
+    phone: String
+    birthmonth: String
+    birthyear: String
+    setting: AccountSettingInput
+}
+
+input AccountSettingInput {
+    anonymous: Boolean
+    birthyear_privacy: AccountPrivacyType
+    birthmonth_privacy: AccountPrivacyType
+    email_privacy: AccountPrivacyType
+    phone_privacy: AccountPrivacyType
+}
+
+type AccountLookingResult {
+    account: LookedAccount
+    relationship: AccountRelationShipType
+    describe: String
+}
+
+type FriendGettingResult {
+    friend: LookedAccount
+    updated_at: DateTime
+}
+
+type FriendRequestingResult {
+    sender: LookedAccount
+    updated_at: DateTime
+}
+
+type LookedAccount {
+    id: Int!
+    name: String!
+    avatar_url: String!
+    describe: String
+    email: String
+    phone: String
+    birthmonth: String
+    birthyear: String
+    created_at: DateTime!
+}
+
+type Account {
+    id: Int!
+    name: String!
+    avatar_url: String!
+    describe: String
+    email: String
+    phone: String
+    birthmonth: String
+    birthyear: String
+    setting: AccountSetting! @hasOne(relation: "setting")
+    role: AccountRole!
+    status: AccountStatus!
+    updated_at: DateTime!
+    created_at: DateTime!
+}
+
+type AccountSetting {
+    anonymous: Boolean!
+    birthyear_privacy: AccountPrivacyType!
+    birthmonth_privacy: AccountPrivacyType!
+    email_privacy: AccountPrivacyType!
+    phone_privacy: AccountPrivacyType!
+}
+
+type ErrorResult {
+    describe: String!
+}
+
+type LoggingResult {
+    token: String
+    status: LoggingResultStatus!
+    account: Account
+    describe: [String]
+}
+
+type AccountRegistrationResult {
+    token: String
+    status: AccountRegistrationResultStatus!
+    account: Account
+    describe: [String]
+}
+
+type AccountEditingResult {
+    status: AccountEditingResultStatus!
+    describe: String
+}
+
+enum AccountEditingResultStatus {
+    FAIL @enum(value: -1)
+    SUCCESS @enum(value: 0)
+    ACC_NOT_FOUND @enum(value: 1)
+}
+
+enum AccountRelationShipType {
+    BLOCKED @enum(value: -1)
+    STRANGER @enum(value: 0)
+    FRIEND @enum(value: 1)
+    FRIEND_REQUEST @enum(value: 2)
+}
+
+enum AccountRegistrationResultStatus {
+    FAIL @enum(value: -1)
+    SUCCESS @enum(value: 0)
+    NAMESAKE @enum(value: 1)
+}
+
+enum LoggingResultStatus {
+    FAIL @enum(value: -1)
+    SUCCESS @enum(value: 0)
+    WRONG_USERNAME @enum(value: 1)
+    WRONG_PWD @enum(value: 2)
+}
+
+enum AccountRole {
+    USER @enum(value: 1)
+    ADMIN @enum(value: 2)
+    MASTER @enum(value: 3)
+}
+
+enum AccountStatus {
+    BANNED @enum(value: -1)
+    UNACTIVATED @enum(value: 0)
+    ACTIVATED @enum(value: 1)
+}
+
+enum AccountPrivacyType {
+    PRIVATE @enum(value: -1)
+    PUBLIC @enum(value: 1)
+    FRIEND @enum(value: 2)
+}
