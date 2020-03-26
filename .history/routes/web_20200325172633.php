@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-	return view('welcome');
+    return response(' ',405);
 });
 Route::get('/test', 'TestController@index');
 Route::get('/file', 'TestController@file');

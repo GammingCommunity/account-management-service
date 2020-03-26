@@ -12,11 +12,9 @@
 */
 
 Route::get('/', function () {
-	return view('welcome');
+    return view('welcome');
 });
 Route::get('/test', 'TestController@index');
 Route::get('/file', 'TestController@file');
 
-Route::options('/', function () {
-	return view('welcome');
-});
+Route::options('/test', 'TestController@index');

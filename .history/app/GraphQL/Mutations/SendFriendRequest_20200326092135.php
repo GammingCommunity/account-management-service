@@ -43,9 +43,9 @@ class SendFriendRequest
 								->where('sender_account_id', $currentAccount->id);
 						});
 				})
-				// ->toSql();
-				// dd($relationship);
-				->first('id');
+				->toSql();
+				dd($relationship);
+				// ->sql('id');
 
 			if (!$relationship) {
 				$result = true == AccountRelationship::create([

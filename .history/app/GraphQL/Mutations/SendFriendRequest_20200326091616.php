@@ -27,7 +27,7 @@ class SendFriendRequest
 		$receiverId = $args['receiver_id'];
 		$currentAccount = $rootValue['verified_account'];
 
-		if ($currentAccount && $receiverId !== $currentAccount->id) {
+		if ($currentAccount) {
 			$relationship = AccountRelationship::where('relationship_type', '<>', AccountRelationshipType::STRANGER)
 				->where(function ($query) use ($receiverId, $currentAccount) {
 					return $query
@@ -43,9 +43,9 @@ class SendFriendRequest
 								->where('sender_account_id', $currentAccount->id);
 						});
 				})
-				// ->toSql();
-				// dd($relationship);
-				->first('id');
+				->getSql();
+				dd($relationship);
+				// ->sql('id');
 
 			if (!$relationship) {
 				$result = true == AccountRelationship::create([

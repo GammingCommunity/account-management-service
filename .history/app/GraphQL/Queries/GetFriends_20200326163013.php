@@ -6,7 +6,6 @@ use App\Account;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use App\AccountRelationship;
-use App\Common\Helpers\AccountHelper;
 use App\Enums\DbEnums\AccountPrivacyType;
 use App\Enums\DbEnums\AccountRelationshipType;
 use App\GraphQL\Entities\Result\FriendGettingResult;
@@ -45,13 +44,10 @@ class GetFriends
 			$friendResult = new FriendGettingResult(null, $relationship->updated_at);
 
 			if($id === $relationship->sender_account_id){
-				$friend = $relationship->receiver;
+				$friendResult->friend = $relationship->receiver;
 			} else {
-				$friend = $relationship->sender;
+				$friendResult->friend = $relationship->sender;
 			}
-
-			AccountHelper::setDefaultAvatarIfNull($friend);
-			$friendResult->friend = $friend;
 
 			$this->checkPrivacy($friendResult->friend);
 
