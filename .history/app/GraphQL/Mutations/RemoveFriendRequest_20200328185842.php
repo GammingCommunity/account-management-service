@@ -10,7 +10,7 @@ use App\Enums\DbEnums\AccountPrivacyType;
 use App\Enums\DbEnums\AccountRelationshipType;
 use Illuminate\Database\Eloquent\Collection;
 
-class SendFriendRequest
+class RemoveFriendRequest
 {
 	/**
 	 * Return a value for the field.
@@ -27,32 +27,14 @@ class SendFriendRequest
 		$receiverId = $args['receiver_id'];
 		$currentAccount = $rootValue['verified_account'];
 
-		if ($currentAccount && $receiverId !== $currentAccount->id && Account::find($receiverId)) {
-			$relationship = AccountRelationship::where('relationship_type', '<>', AccountRelationshipType::STRANGER)
-				->where(function ($query) use ($receiverId, $currentAccount) {
-					return $query
-						->orWhere(function ($query) use ($receiverId, $currentAccount) {
-							return $query
-								->where('sender_account_id', $receiverId)
-								->where('relationship_type', '<>', AccountRelationshipType::FRIEND_REQUEST)
-								->where('receiver_account_id', $currentAccount->id);
-						})
-						->orWhere(function ($query) use ($receiverId, $currentAccount) {
-							return $query
-								->where('receiver_account_id', $receiverId)
-								->where('sender_account_id', $currentAccount->id);
-						});
-				})
-				// ->toSql();
-				// dd($relationship);
-				->first('id');
+		if ($currentAccount) {
+			$relationship = AccountRelationship::where('relationship_type', AccountRelationshipType::FRIEND_REQUEST)
+				->where('receiver_account_id', $receiverId)
+				->where('sender_account_id', $currentAccount->id)
+				->first();dd($relationship);
 
-			if (!$relationship) {
-				$result = true == AccountRelationship::create([
-					'sender_account_id' => $currentAccount->id,
-					'receiver_account_id' => $receiverId,
-					'relationship_type' => AccountRelationshipType::FRIEND_REQUEST
-				]);
+			if ($relationship) {
+				$result = $relationship->delete();
 			}
 		}
 

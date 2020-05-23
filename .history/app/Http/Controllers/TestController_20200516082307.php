@@ -12,19 +12,12 @@ use Illuminate\Support\Str;
 class TestController extends Controller
 {
     public function index(){
-		$h = 'Welcome to hutech.edu.vn';
-		$email = 'abc@hutech.com';
-		$a = ['11','22'];
-		$x = '000547023.24';
-		$y = '0005470230';
+		$a = 1;
+		$A = 2;
 
-		echo trim($y, '0');
-		// echo ltrim($x, '0');
-		// echo strstr($email, '.');
-		// print $h.$email;
-		// define('ssss', 'ss');
-		// print_r(str_word_count($h, 0));
-			// echo implode()
+		// dd($result);
+			print_r($php_errormsg);
+			
 	}
 
 	protected function setAccountEmails(){

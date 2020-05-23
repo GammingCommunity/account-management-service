@@ -9,7 +9,8 @@ type Query {
     lookAccount(ids: [Int]!): [AccountLookingResult]! @authenticate
     getThisAccount: Account! @authenticate
     login(username: String!, pwd: String!): LoggingResult!
-    getFriends(friend_name: String): [FriendGettingResult]! @authenticate
+    getFriends: [FriendGettingResult]! @authenticate
+    getFriendsByName(name: String!): [FriendGettingResult]! @authenticate
     getFriendRequests: [FriendRequestingResult]! @authenticate
 }
 
@@ -19,7 +20,6 @@ type Mutation {
     register(account: AccountRegistrationInput!): AccountRegistrationResult!
 	sendFriendRequest(receiver_id: Int!): Boolean! @authenticate
 	confirmFriendRequest(sender_id: Int!, is_confirm: Boolean!): Boolean! @authenticate
-	removeFriendRequest(receiver_id: Int!): Boolean! @authenticate
 }
 
 input AccountRegistrationInput {

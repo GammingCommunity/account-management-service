@@ -114,7 +114,7 @@ class LookAccount
 			}
 		} else {
 			//	stranger account
-			$accountLookingResult->relationship = AccountRelationshipType::STRANGER;
+			
 
 			if ($lookingAccount->setting->birthmonth_privacy !== AccountPrivacyType::PUBLIC) {
 				$lookingAccount->birthmonth = null;

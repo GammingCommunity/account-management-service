@@ -26,7 +26,7 @@ class GetFriends
 	{
 		$result = [];
 		$currentAccount =  $rootValue['verified_account'];
-		$friendName = $args['friend_name'] ?? null;
+		$friendName = $args['friend_name'];
 
 		if ($currentAccount) {
 			$relationships = AccountRelationship::where('relationship_type', AccountRelationshipType::FRIEND)->where(function ($query) use ($currentAccount) {
@@ -39,7 +39,7 @@ class GetFriends
 		return $result;
 	}
 
-	protected function getFriendsList(int $currentAccountId, $relationships, string $friendName = null): array
+	protected function getFriendsList(int $currentAccountId, $relationships, string $friendName): array
 	{
 		$result = [];
 
@@ -50,7 +50,7 @@ class GetFriends
 				$friend = $relationship->sender;
 			}
 
-			if ($friendName === null || strpos(strtoupper($friend->name), strtoupper($friendName)) !== false) {
+			if ($friendName === '' || $friendName === '*' || strpos(strtoupper($friend->name), strtoupper($friendName)) !== false) {
 				$friendResult = new FriendGettingResult($friend, $relationship->updated_at);
 				AccountHelper::setDefaultAvatarIfNull($friendResult->friend);
 				$this->checkPrivacy($friendResult->friend);

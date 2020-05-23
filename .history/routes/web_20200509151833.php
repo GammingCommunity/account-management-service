@@ -20,7 +20,7 @@ Route::get('/', function () {
 Route::get('/test', 'TestController@index');
 Route::get('/file', 'TestController@file');
 
-// Route::options('/', function () {
-// 	return response(null)->header("Access-Control-Allow-Origin", "*")->header("Access-Control-Allow-Methods", "*")->header("Access-Control-Allow-Headers", "*");
-// 	// return view('welcome');
-// });
+Route::options('/', function () {
+	return response(null)->header("Access-Control-Allow-Origin", "*")->header("Access-Control-Allow-Methods", "*")->header("Access-Control-Allow-Headers", "*");
+	// return view('welcome');
+});

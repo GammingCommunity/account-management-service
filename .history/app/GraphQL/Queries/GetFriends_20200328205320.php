@@ -26,7 +26,7 @@ class GetFriends
 	{
 		$result = [];
 		$currentAccount =  $rootValue['verified_account'];
-		$friendName = $args['friend_name'] ?? null;
+		$friendName = $args['friend_name'];
 
 		if ($currentAccount) {
 			$relationships = AccountRelationship::where('relationship_type', AccountRelationshipType::FRIEND)->where(function ($query) use ($currentAccount) {

@@ -26,44 +26,43 @@ class GetFriends
 	{
 		$result = [];
 		$currentAccount =  $rootValue['verified_account'];
-		$friendName = $args['friend_name'] ?? null;
+		$friendName = $args['friend_name'];
 
 		if ($currentAccount) {
-			$relationships = AccountRelationship::where('relationship_type', AccountRelationshipType::FRIEND)->where(function ($query) use ($currentAccount) {
+			$relationships = AccountRelationship::where('relationship_type', AccountRelationshipType::FRIEND)->where(function ($query) use ($currentAccount){
 				return $query->where('sender_account_id', $currentAccount->id)->orWhere('receiver_account_id', $currentAccount->id);
 			})->get(['sender_account_id', 'receiver_account_id', 'updated_at']);
-
+			
 			$result = $this->getFriendsList($currentAccount->id, $relationships, $friendName);
 		}
 
 		return $result;
 	}
 
-	protected function getFriendsList(int $currentAccountId, $relationships, string $friendName = null): array
-	{
+	protected function getFriendsList(int $id, $relationships, $friendName): array{
 		$result = [];
 
 		foreach ($relationships as $relationship) {
-			if ($currentAccountId === $relationship->sender_account_id) {
+			$friendResult = new FriendGettingResult(null, $relationship->updated_at);
+
+			if($id === $relationship->sender_account_id){
 				$friend = $relationship->receiver;
 			} else {
 				$friend = $relationship->sender;
 			}
 
-			if ($friendName === null || strpos(strtoupper($friend->name), strtoupper($friendName)) !== false) {
-				$friendResult = new FriendGettingResult($friend, $relationship->updated_at);
-				AccountHelper::setDefaultAvatarIfNull($friendResult->friend);
-				$this->checkPrivacy($friendResult->friend);
+			AccountHelper::setDefaultAvatarIfNull($friend);
+			$friendResult->friend = $friend;
 
-				array_push($result, $friendResult);
-			}
+			$this->checkPrivacy($friendResult->friend);
+
+			array_push($result, $friendResult);
 		}
 
 		return $result;
 	}
 
-	protected function checkPrivacy(Account &$lookedAccount)
-	{
+	protected function checkPrivacy(Account &$lookedAccount){
 		if ($lookedAccount->setting->birthmonth_privacy < AccountPrivacyType::PUBLIC) {
 			$lookedAccount->birthmonth = null;
 		}

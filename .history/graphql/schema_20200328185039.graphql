@@ -9,7 +9,7 @@ type Query {
     lookAccount(ids: [Int]!): [AccountLookingResult]! @authenticate
     getThisAccount: Account! @authenticate
     login(username: String!, pwd: String!): LoggingResult!
-    getFriends(friend_name: String): [FriendGettingResult]! @authenticate
+    getFriends(friend_name: String!): [FriendGettingResult]! @authenticate
     getFriendRequests: [FriendRequestingResult]! @authenticate
 }
 

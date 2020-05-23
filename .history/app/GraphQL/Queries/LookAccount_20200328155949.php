@@ -96,9 +96,9 @@ class LookAccount
 
 	protected function handleStrangerAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
 	{
-		if ($relasitonship && $relasitonship->relationship_type === AccountRelationshipType::FRIEND_REQUEST) {
+		if (!$relasitonship) {
 			//	stranger account
-			$accountLookingResult->relationship = AccountRelationshipType::FRIEND_REQUEST;
+			$accountLookingResult->relationship = AccountRelationshipType::STRANGER;
 
 			if ($lookingAccount->setting->birthmonth_privacy !== AccountPrivacyType::PUBLIC) {
 				$lookingAccount->birthmonth = null;
@@ -112,7 +112,7 @@ class LookAccount
 			if ($lookingAccount->setting->phone_privacy !== AccountPrivacyType::PUBLIC) {
 				$lookingAccount->phone = null;
 			}
-		} else {
+		} else  ($relasitonship->relationship_type === AccountRelationshipType::FRIEND_REQUEST) {
 			//	stranger account
 			$accountLookingResult->relationship = AccountRelationshipType::STRANGER;
 

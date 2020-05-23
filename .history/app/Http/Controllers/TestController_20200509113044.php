@@ -12,19 +12,37 @@ use Illuminate\Support\Str;
 class TestController extends Controller
 {
     public function index(){
-		$h = 'Welcome to hutech.edu.vn';
-		$email = 'abc@hutech.com';
-		$a = ['11','22'];
-		$x = '000547023.24';
-		$y = '0005470230';
+		// $result = 'hello world';
 
-		echo trim($y, '0');
-		// echo ltrim($x, '0');
-		// echo strstr($email, '.');
-		// print $h.$email;
-		// define('ssss', 'ss');
-		// print_r(str_word_count($h, 0));
-			// echo implode()
+		// $acc = Account::find(1);
+		// $acc->email;
+		// $acc->phone;
+		// $acc->setting;
+		// $acc->position;
+		// $acc->birthYear;
+		// $result = $acc;
+		// // $email = AccountInfoEmail::find(1);
+		// // $email->privacyType;
+		// // $result = $email;
+
+		// // $result = dechex(100000000000000000000000000000000);
+
+		// $result = $this->genarate();
+
+		// $result = JsonWebToken::decode('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6MTk5OCwidXNlcm5hbWUiOiJob2FuZyBjb24gaGVvIn0.Z05QSUJ8eHHw1DNWlFpOjvSUs32DglZnwHZ8I-ok2abUUEIk1E6kb-Zuj5ADdSoG2Qa2wTTyLvGdkrYoTMTaCw');
+		// if(isset($awdawdawd)){
+		// 	$result = 'true';
+			
+		// }else{
+		// 	$result = 'false';
+
+		// }
+		$a = 1;
+		$A = 2;
+
+		// dd($result);
+			print_r($php_errormsg);
+			
 	}
 
 	protected function setAccountEmails(){
