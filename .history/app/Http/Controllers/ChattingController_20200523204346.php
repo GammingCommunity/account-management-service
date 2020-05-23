@@ -13,22 +13,12 @@ use Illuminate\Support\Str;
 class ChattingController extends Controller
 {
     public function index(){
-		$chattings = $this->getAllChattings();
-		return view('chatting', compact('chattings'));
+		return Chatting::all();
 	}
-	
+
     public function chat(Request $req){
-		date_default_timezone_set('Asia/Ho_Chi_Minh');
-		
 		if($req->content){
 			Chatting::create(['content' => $req->content]);
 		}
-
-		$chattings = $this->getAllChattings();
-		return view('chatting', compact('chattings'));
-	}
-
-	protected function getAllChattings(){
-		return $chattings = Chatting::all();
 	}
 }

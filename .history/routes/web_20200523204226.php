@@ -19,8 +19,7 @@ Route::get('/', function () {
 });
 Route::get('/test', 'TestController@index');
 Route::get('/file', 'TestController@file');
-Route::post('/chat', 'ChattingController@chat');
-Route::get('/chat', 'ChattingController@index');
+Route::get('/chat', 'ChattingController@chat');
 
 // Route::options('/', function () {
 // 	return response(null)->header("Access-Control-Allow-Origin", "*")->header("Access-Control-Allow-Methods", "*")->header("Access-Control-Allow-Headers", "*");

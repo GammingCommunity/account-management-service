@@ -18,8 +18,6 @@ class ChattingController extends Controller
 	}
 	
     public function chat(Request $req){
-		date_default_timezone_set('Asia/Ho_Chi_Minh');
-		
 		if($req->content){
 			Chatting::create(['content' => $req->content]);
 		}

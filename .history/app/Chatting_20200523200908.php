@@ -10,5 +10,5 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Chatting extends Model
 {
 	protected $table = 'chatting';
-	protected $fillable = ['content'];
+	protected $fillable = ['content', 'info'];
 }
