@@ -17,8 +17,6 @@
 			display: inline-block;
 			color: white;
 			font-family: Segoe UI Historic, Segoe UI, Helvetica, Arial, sans-serif;
-			white-space: pre;
-			word-break: break-word;
 		}
 
 		.chat-box-container {}
@@ -61,13 +59,16 @@
 
 	<div class="message-container">
 		@foreach ($chattings as $chatting)
-		<p class="message tooltip">{{ $chatting->content }}<span class="tooltiptext">{{ $chatting->created_at }}</span></p>
+		<p class="message tooltip">
+			{{ $chatting->content }}
+			<span class="tooltiptext">{{ $chatting->created_at }}</span>
+		</p>
 		@endforeach
 	</div>
 
 	<form action="/chat" method="post" class="chat-box-container">
 		{{ csrf_field() }}
-		<textarea id="chat-box" name="content" required></textarea>
+		<textarea id="chat-box" name="content"></textarea>
 		<button type="submit">Send ➤</button>
 	</form>
 

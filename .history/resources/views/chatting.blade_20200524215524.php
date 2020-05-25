@@ -61,7 +61,10 @@
 
 	<div class="message-container">
 		@foreach ($chattings as $chatting)
-		<p class="message tooltip">{{ $chatting->content }}<span class="tooltiptext">{{ $chatting->created_at }}</span></p>
+		<p class="message tooltip">
+			{{ $chatting->content }}
+			<span class="tooltiptext">{{ $chatting->created_at }}</span>
+		</p>
 		@endforeach
 	</div>
 
