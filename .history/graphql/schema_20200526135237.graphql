@@ -6,10 +6,11 @@ scalar DateTime
 scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
 type Query {
-    lookAccount(ids: [Int]): [AccountLookingResult]! @authenticate
+    lookAccount(ids: [Int]!): [AccountLookingResult]! @authenticate
+    searchFriends(key: String): [AccountLookingResult]! @authenticate
     getThisAccount: Account! @authenticate
     login(username: String!, pwd: String!): LoggingResult!
-    getFriends: [FriendGettingResult]! @authenticate
+    getFriends(friend_name: String): [FriendGettingResult]! @authenticate
     getFriendRequests: [FriendRequestingResult]! @authenticate
 }
 
@@ -18,7 +19,8 @@ type Mutation {
         @authenticate
     register(account: AccountRegistrationInput!): AccountRegistrationResult!
 	sendFriendRequest(receiver_id: Int!): Boolean! @authenticate
-	confirmFriendRequest(sender_id: Int!): Boolean! @authenticate
+	confirmFriendRequest(sender_id: Int!, is_confirm: Boolean!): Boolean! @authenticate
+	removeFriendRequest(receiver_id: Int!): Boolean! @authenticate
 }
 
 input AccountRegistrationInput {
