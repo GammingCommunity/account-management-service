@@ -39,19 +39,21 @@ class SearchAccounts
 
 				AccountHelper::setDefaultAvatarIfNull($lookingAccount);
 
-				$relationship = AccountRelationship::where(function ($query) use ($lookingAccount, $currentAccount) {
+				$relasitonship = AccountRelationship::where(function ($query) use ($lookingAccount, $currentAccount) {
 					return $query->where('sender_account_id', $currentAccount->id)->where('receiver_account_id', $lookingAccount->id);
 				})->orWhere(function ($query) use ($lookingAccount, $currentAccount) {
 					return $query->where('sender_account_id', $lookingAccount->id)->where('receiver_account_id', $currentAccount->id);
-				})->first(['relationship_type', 'sender_account_id', 'receiver_account_id']);
+				})->first(['relationship_type']);
+
+				dd($relasitonship);
 
 				$lookingAccount->setting = $this->createAccountSettingIfItNotExist($lookingAccount);
-				$this->handleBlockedAccount($lookingAccount, $relationship, $accountLookingResult);
+				$this->handleBlockedAccount($lookingAccount, $relasitonship, $accountLookingResult);
 				if ($accountLookingResult->relationship === null) {
-					$this->handleFriendAccount($lookingAccount, $relationship, $accountLookingResult);
+					$this->handleFriendAccount($lookingAccount, $relasitonship, $accountLookingResult);
 				}
 				if ($accountLookingResult->relationship === null) {
-					$this->handleStrangerAccount($lookingAccount, $relationship, $accountLookingResult);
+					$this->handleStrangerAccount($lookingAccount, $relasitonship, $accountLookingResult);
 				}
 
 				$accountLookingResult->account = $lookingAccount;
@@ -126,11 +128,7 @@ class SearchAccounts
 	{
 		if ($relasitonship && $relasitonship->relationship_type === AccountRelationshipType::FRIEND_REQUEST) {
 			//	stranger account
-			if($relasitonship->sender_account_id === $lookingAccount->id){
-				$accountLookingResult->relationship = AccountRelationshipType::FROM_FRIEND_REQUEST;
-			} else {
-				$accountLookingResult->relationship = AccountRelationshipType::FRIEND_REQUEST;
-			}
+			$accountLookingResult->relationship = AccountRelationshipType::FRIEND_REQUEST;
 
 			if ($lookingAccount->setting->birthmonth_privacy !== AccountPrivacyType::PUBLIC) {
 				$lookingAccount->birthmonth = null;
