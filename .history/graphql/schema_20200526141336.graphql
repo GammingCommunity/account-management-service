@@ -7,7 +7,7 @@ scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
 type Query {
     lookAccount(ids: [Int]!): [AccountLookingResult]! @authenticate
-    searchAccounts(key: String!): [AccountLookingResult]! @authenticate 
+    searchFriends(key: String!): [AccountLookingResult]! @authenticate 
     getThisAccount: Account! @authenticate
     login(username: String!, pwd: String!): LoggingResult!
     getFriends(friend_name: String): [FriendGettingResult]! @authenticate
