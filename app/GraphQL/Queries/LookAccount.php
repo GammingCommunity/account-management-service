@@ -42,6 +42,7 @@ class LookAccount
 					return $query->where('sender_account_id', $lookingAccount->id)->where('receiver_account_id', $currentAccount->id);
 				})->first(['relationship_type']);
 
+				$lookingAccount->setting = $this->createAccountSettingIfItNotExist($lookingAccount);
 				$this->handleBlockedAccount($lookingAccount, $relasitonship, $accountLookingResult);
 				if ($accountLookingResult->relationship === null) {
 					$this->handleFriendAccount($lookingAccount, $relasitonship, $accountLookingResult);
@@ -59,6 +60,14 @@ class LookAccount
 		return $result;
 	}
 
+	protected function createAccountSettingIfItNotExist(Account $account): AccountSetting
+	{
+		if ($account->setting) {
+			return $account->setting;
+		} else {
+			return AccountSetting::createModel($account->id);
+		}
+	}
 
 	protected function handleBlockedAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
 	{

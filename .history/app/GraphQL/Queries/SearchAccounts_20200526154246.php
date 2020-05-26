@@ -8,10 +8,12 @@ use App\AccountRelationship;
 use App\Enums\DbEnums\AccountRelationshipType;
 use App\Enums\DbEnums\AccountPrivacyType;
 use App\Account;
+use App\AccountSetting;
 use App\Common\Helpers\AccountHelper;
 use App\GraphQL\Entities\Result\AccountLookingResult;
+use Illuminate\Database\Eloquent\Collection;
 
-class LookAccount
+class SearchAccounts
 {
 	/**
 	 * Return a value for the field.
@@ -24,12 +26,13 @@ class LookAccount
 	 */
 	public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): array
 	{
+
 		$result = [];
-		$ids = $args['ids'];
+		$searchKey = $args['key'];
 		$currentAccount = $rootValue['verified_account'];
 
 		if ($currentAccount) {
-			$lookingAccounts = Account::find($ids);
+			$lookingAccounts = $this->findAccounts($searchKey);
 
 			foreach ($lookingAccounts as $lookingAccount) {
 				$accountLookingResult = new AccountLookingResult();
@@ -42,6 +45,7 @@ class LookAccount
 					return $query->where('sender_account_id', $lookingAccount->id)->where('receiver_account_id', $currentAccount->id);
 				})->first(['relationship_type']);
 
+				
 				$this->handleBlockedAccount($lookingAccount, $relasitonship, $accountLookingResult);
 				if ($accountLookingResult->relationship === null) {
 					$this->handleFriendAccount($lookingAccount, $relasitonship, $accountLookingResult);
@@ -59,6 +63,29 @@ class LookAccount
 		return $result;
 	}
 
+	protected function createAccountSettingIfItNotExist(Account $account): ?AccountSetting{
+		if ($account->setting) {
+			return null;
+		} else {
+			return AccountSetting::createModel($account->id);
+		}
+	}
+
+	protected function findAccounts(string $key): array
+	{
+		$accounts = [];
+
+		foreach ($this->findAccountsByString($key) as $account) {
+			array_push($accounts, $account);
+		}
+
+		return $accounts;
+	}
+
+	protected function findAccountsByString($key): Collection
+	{
+		return Account::whereRaw("CONVERT(`id`, CHAR) = '{$key}' or UPPER(`describe`) like UPPER('%{$key}%') or UPPER(`name`) like UPPER('%{$key}%')")->get();
+	}
 
 	protected function handleBlockedAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
 	{
@@ -114,7 +141,7 @@ class LookAccount
 			}
 		} else {
 			//	stranger account
-			
+			$accountLookingResult->relationship = AccountRelationshipType::STRANGER;
 
 			if ($lookingAccount->setting->birthmonth_privacy !== AccountPrivacyType::PUBLIC) {
 				$lookingAccount->birthmonth = null;

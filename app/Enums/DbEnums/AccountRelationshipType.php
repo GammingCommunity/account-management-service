@@ -7,4 +7,5 @@ final class AccountRelationshipType{
 	const STRANGER = 0;
 	const FRIEND = 1;
 	const FRIEND_REQUEST = 2;
+	const FROM_FRIEND_REQUEST = 3;
 }

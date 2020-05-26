@@ -42,6 +42,7 @@ class LookAccount
 					return $query->where('sender_account_id', $lookingAccount->id)->where('receiver_account_id', $currentAccount->id);
 				})->first(['relationship_type']);
 
+				$lookingAccount->setting = $this->createAccountSettingIfItNotExist($lookingAccount);
 				$this->handleBlockedAccount($lookingAccount, $relasitonship, $accountLookingResult);
 				if ($accountLookingResult->relationship === null) {
 					$this->handleFriendAccount($lookingAccount, $relasitonship, $accountLookingResult);
@@ -59,6 +60,14 @@ class LookAccount
 		return $result;
 	}
 
+	protected function createAccountSettingIfItNotExist(Account $account): AccountSetting
+	{
+		if ($account->setting) {
+			return $account->setting;
+		} else {
+			return AccountSetting::createModel($account->id);
+		}
+	}
 
 	protected function handleBlockedAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
 	{
@@ -96,9 +105,9 @@ class LookAccount
 
 	protected function handleStrangerAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
 	{
-		if (!$relasitonship) {
+		if ($relasitonship && $relasitonship->relationship_type === AccountRelationshipType::FRIEND_REQUEST) {
 			//	stranger account
-			$accountLookingResult->relationship = AccountRelationshipType::STRANGER;
+			$accountLookingResult->relationship = AccountRelationshipType::FRIEND_REQUEST;
 
 			if ($lookingAccount->setting->birthmonth_privacy !== AccountPrivacyType::PUBLIC) {
 				$lookingAccount->birthmonth = null;
@@ -112,9 +121,9 @@ class LookAccount
 			if ($lookingAccount->setting->phone_privacy !== AccountPrivacyType::PUBLIC) {
 				$lookingAccount->phone = null;
 			}
-		} else if ($relasitonship->relationship_type === AccountRelationshipType::FRIEND_REQUEST) {
+		} else {
 			//	stranger account
-			$accountLookingResult->relationship = AccountRelationshipType::FRIEND_REQUEST;
+			$accountLookingResult->relationship = AccountRelationshipType::STRANGER;
 
 			if ($lookingAccount->setting->birthmonth_privacy !== AccountPrivacyType::PUBLIC) {
 				$lookingAccount->birthmonth = null;

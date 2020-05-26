@@ -8,6 +8,7 @@ use App\AccountRelationship;
 use App\Enums\DbEnums\AccountRelationshipType;
 use App\Enums\DbEnums\AccountPrivacyType;
 use App\Account;
+use App\AccountSetting;
 use App\Common\Helpers\AccountHelper;
 use App\GraphQL\Entities\Result\AccountLookingResult;
 use Illuminate\Database\Eloquent\Collection;
@@ -44,6 +45,7 @@ class SearchAccounts
 					return $query->where('sender_account_id', $lookingAccount->id)->where('receiver_account_id', $currentAccount->id);
 				})->first(['relationship_type']);
 
+				$lookingAccount->setting = $this->createAccountSettingIfItNotExist($lookingAccount);
 				$this->handleBlockedAccount($lookingAccount, $relasitonship, $accountLookingResult);
 				if ($accountLookingResult->relationship === null) {
 					$this->handleFriendAccount($lookingAccount, $relasitonship, $accountLookingResult);
@@ -59,6 +61,15 @@ class SearchAccounts
 		}
 
 		return $result;
+	}
+
+	protected function createAccountSettingIfItNotExist(Account $account): AccountSetting
+	{
+		if ($account->setting) {
+			return $account->setting;
+		} else {
+			return AccountSetting::createModel($account->id);
+		}
 	}
 
 	protected function findAccounts(string $key): array

@@ -8,9 +8,11 @@ use App\AccountRelationship;
 use App\Enums\DbEnums\AccountRelationshipType;
 use App\Enums\DbEnums\AccountPrivacyType;
 use App\Account;
+use App\Common\Helpers\AccountHelper;
 use App\GraphQL\Entities\Result\AccountLookingResult;
+use Illuminate\Database\Eloquent\Collection;
 
-class LookAccount
+class SearchAccounts
 {
 	/**
 	 * Return a value for the field.
@@ -23,17 +25,18 @@ class LookAccount
 	 */
 	public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): array
 	{
+
 		$result = [];
-		$ids = $args['ids'];
+		$searchKey = $args['key'];
 		$currentAccount = $rootValue['verified_account'];
 
 		if ($currentAccount) {
-			$lookingAccounts = Account::find($ids);
+			$lookingAccounts = $this->findAccounts($searchKey);
 
 			foreach ($lookingAccounts as $lookingAccount) {
 				$accountLookingResult = new AccountLookingResult();
 
-				$this->setDefaultAvatarIfNull($lookingAccount);
+				AccountHelper::setDefaultAvatarIfNull($lookingAccount);
 
 				$relasitonship = AccountRelationship::where(function ($query) use ($lookingAccount, $currentAccount) {
 					return $query->where('sender_account_id', $currentAccount->id)->where('receiver_account_id', $lookingAccount->id);
@@ -41,6 +44,7 @@ class LookAccount
 					return $query->where('sender_account_id', $lookingAccount->id)->where('receiver_account_id', $currentAccount->id);
 				})->first(['relationship_type']);
 
+				
 				$this->handleBlockedAccount($lookingAccount, $relasitonship, $accountLookingResult);
 				if ($accountLookingResult->relationship === null) {
 					$this->handleFriendAccount($lookingAccount, $relasitonship, $accountLookingResult);
@@ -58,6 +62,26 @@ class LookAccount
 		return $result;
 	}
 
+	protected function createAccountSettingIfItNotExist(Account lookingAccount){
+		if ($lookingAccount->setting) {
+		}
+	}
+
+	protected function findAccounts(string $key): array
+	{
+		$accounts = [];
+
+		foreach ($this->findAccountsByString($key) as $account) {
+			array_push($accounts, $account);
+		}
+
+		return $accounts;
+	}
+
+	protected function findAccountsByString($key): Collection
+	{
+		return Account::whereRaw("CONVERT(`id`, CHAR) = '{$key}' or UPPER(`describe`) like UPPER('%{$key}%') or UPPER(`name`) like UPPER('%{$key}%')")->get();
+	}
 
 	protected function handleBlockedAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
 	{
@@ -95,7 +119,23 @@ class LookAccount
 
 	protected function handleStrangerAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
 	{
-		if (!$relasitonship) {
+		if ($relasitonship && $relasitonship->relationship_type === AccountRelationshipType::FRIEND_REQUEST) {
+			//	stranger account
+			$accountLookingResult->relationship = AccountRelationshipType::FRIEND_REQUEST;
+
+			if ($lookingAccount->setting->birthmonth_privacy !== AccountPrivacyType::PUBLIC) {
+				$lookingAccount->birthmonth = null;
+			}
+			if ($lookingAccount->setting->birthyear_privacy !== AccountPrivacyType::PUBLIC) {
+				$lookingAccount->birthyear = null;
+			}
+			if ($lookingAccount->setting->email_privacy !== AccountPrivacyType::PUBLIC) {
+				$lookingAccount->email = null;
+			}
+			if ($lookingAccount->setting->phone_privacy !== AccountPrivacyType::PUBLIC) {
+				$lookingAccount->phone = null;
+			}
+		} else {
 			//	stranger account
 			$accountLookingResult->relationship = AccountRelationshipType::STRANGER;
 
@@ -111,13 +151,6 @@ class LookAccount
 			if ($lookingAccount->setting->phone_privacy !== AccountPrivacyType::PUBLIC) {
 				$lookingAccount->phone = null;
 			}
-		}
-	}
-
-	protected function setDefaultAvatarIfNull(Account &$account)
-	{
-		if ($account->avatar_url == null) {
-			$account->avatar_url = config('default.account_avatar');
 		}
 	}
 }
