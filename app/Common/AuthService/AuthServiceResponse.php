@@ -27,7 +27,7 @@ class AuthServiceResponse{
 	public function __construct(string $jsonString)
 	{
 		$obj = json_decode($jsonString);
-		if(property_exists($obj, 'status') && property_exists($obj, 'data') && property_exists($obj, 'describe')){
+		if($obj && property_exists($obj, 'status') && property_exists($obj, 'data') && property_exists($obj, 'describe')){
 			$this->status = $obj->status;
 			$this->data = $obj->data;
 			$this->describe = $obj->describe;
