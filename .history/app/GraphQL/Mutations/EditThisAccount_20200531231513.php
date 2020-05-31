@@ -10,7 +10,7 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use App\GraphQL\Entities\Input\AccountSettingInput;
 use App\GraphQL\Entities\Result\AccountEditingResult;
 
-class EditAccount
+class EditThisAccount
 {
 	/**
 	 * Return a value for the field.
@@ -31,27 +31,7 @@ class EditAccount
 
 			$setting = isset($inputAccount['setting']) ? new AccountSettingInput($args) : null;
 
-			if (isset($inputAccount['name'])) {
-				$account->name = $inputAccount['name'];
-			}
-			if (isset($inputAccount['avatar_url'])) {
-				$account->avatar_url = $inputAccount['avatar_url'];
-			}
-			if (isset($inputAccount['describe'])) {
-				$account->describe = $inputAccount['describe'];
-			}
-			if (isset($inputAccount['birthmonth'])) {
-				$account->birthmonth = $inputAccount['birthmonth'];
-			}
-			if (isset($inputAccount['birthyear'])) {
-				$account->birthyear = $inputAccount['birthyear'];
-			}
-			if (isset($inputAccount['phone'])) {
-				$account->phone = $inputAccount['phone'];
-			}
-			if (isset($inputAccount['email'])) {
-				$account->email = $inputAccount['email'];
-			}
+			$this->updateAccountInfo($account, $inputAccount);
 
 			if ($this->updateSetting($account, $setting)) {
 				if ($account->save()) {
@@ -69,6 +49,30 @@ class EditAccount
 		return $result;
 	}
 
+	protected function updateAccountInfo(Account &$account, $info)
+	{
+		if (isset($info['name'])) {
+			$account->name = $info['name'];
+		}
+		if (isset($info['avatar_url'])) {
+			$account->avatar_url = $info['avatar_url'];
+		}
+		if (isset($info['describe'])) {
+			$account->describe = $info['describe'];
+		}
+		if (isset($info['birthmonth'])) {
+			$account->birthmonth = $info['birthmonth'];
+		}
+		if (isset($info['birthyear'])) {
+			$account->birthyear = $info['birthyear'];
+		}
+		if (isset($info['phone'])) {
+			$account->phone = $info['phone'];
+		}
+		if (isset($info['email'])) {
+			$account->email = $info['email'];
+		}
+	}
 
 	protected function updateSetting(Account &$account, $setting): bool
 	{
@@ -77,6 +81,7 @@ class EditAccount
 
 			if (!$accountSetting) {
 				$accountSetting = new AccountSetting();
+				$accountSetting->id = $account->id;
 			}
 
 			if ($setting->anonymous !== null) {
@@ -93,6 +98,15 @@ class EditAccount
 			}
 			if ($setting->phone_privacy !== null) {
 				$accountSetting->phone_privacy = $setting->phone_privacy;
+			}
+			if ($setting->allow_phone_to_search !== null) {
+				$accountSetting->allow_phone_to_search = $setting->allow_phone_to_search;
+			}
+			if ($setting->allow_email_to_search !== null) {
+				$accountSetting->allow_email_to_search = $setting->allow_email_to_search;
+			}
+			if ($setting->not_receive_messages_from_strangers !== null) {
+				$accountSetting->not_receive_messages_from_strangers = $setting->not_receive_messages_from_strangers;
 			}
 
 			return $accountSetting->save();

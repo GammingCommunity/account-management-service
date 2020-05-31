@@ -48,9 +48,6 @@ input AccountSettingInput {
     birthmonth_privacy: AccountPrivacyType
     email_privacy: AccountPrivacyType
     phone_privacy: AccountPrivacyType
-	allow_email_to_search: Boolean
-    allow_phone_to_search: Boolean
-    not_receive_messages_from_strangers: Boolean
 }
 
 type AccountLookingResult {
@@ -105,7 +102,6 @@ type AccountSetting {
     phone_privacy: AccountPrivacyType!
 	allow_email_to_search: Boolean!
     allow_phone_to_search: Boolean!
-    not_receive_messages_from_strangers: Boolean!
 }
 
 type ErrorResult {

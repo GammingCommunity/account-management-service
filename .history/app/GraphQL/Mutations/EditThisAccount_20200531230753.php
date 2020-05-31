@@ -69,6 +69,30 @@ class EditThisAccount
 		return $result;
 	}
 
+	protected function updateAccountInfo(Account &$account, $info)
+	{
+		if (isset($info['name'])) {
+			$account->name = $info['name'];
+		}
+		if (isset($info['avatar_url'])) {
+			$account->avatar_url = $info['avatar_url'];
+		}
+		if (isset($info['describe'])) {
+			$account->describe = $info['describe'];
+		}
+		if (isset($info['birthmonth'])) {
+			$account->birthmonth = $info['birthmonth'];
+		}
+		if (isset($info['birthyear'])) {
+			$account->birthyear = $info['birthyear'];
+		}
+		if (isset($info['phone'])) {
+			$account->phone = $info['phone'];
+		}
+		if (isset($info['email'])) {
+			$account->email = $info['email'];
+		}
+	}
 
 	protected function updateSetting(Account &$account, $setting): bool
 	{
@@ -77,6 +101,7 @@ class EditThisAccount
 
 			if (!$accountSetting) {
 				$accountSetting = new AccountSetting();
+				$accountSetting->id = $account->id;
 			}
 
 			if ($setting->anonymous !== null) {
@@ -93,6 +118,12 @@ class EditThisAccount
 			}
 			if ($setting->phone_privacy !== null) {
 				$accountSetting->phone_privacy = $setting->phone_privacy;
+			}
+			if ($setting->allow_phone_to_search !== null) {
+				$accountSetting->allow_phone_to_search = $setting->allow_phone_to_search;
+			}
+			if ($setting->allow_email_to_search !== null) {
+				$accountSetting->allow_email_to_search = $setting->allow_email_to_search;
 			}
 
 			return $accountSetting->save();
