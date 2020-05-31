@@ -41,5 +41,8 @@ class AccountSettingInput
 		$this->birthmonth_privacy = $setting['birthmonth_privacy'] ?? null;
 		$this->email_privacy = $setting['email_privacy'] ?? null;
 		$this->phone_privacy = $setting['phone_privacy'] ?? null;
+		$this->allow_email_to_search = $setting['allow_email_to_search'] ?? null;
+		$this->allow_phone_to_search = $setting['allow_phone_to_search'] ?? null;
+		$this->not_receive_messages_from_strangers = $setting['not_receive_messages_from_strangers'] ?? null;
 	}
 }
