@@ -52,7 +52,6 @@ class GetFriends
 
 			if ($friendName === null || strpos(strtoupper($friend->name), strtoupper($friendName)) !== false) {
 				$friendResult = new FriendGettingResult($friend, $relationship->updated_at);
-				AccountHelper::setDefaultAvatarIfNull($friendResult->friend);
 				$this->checkPrivacy($friendResult->friend);
 
 				array_push($result, $friendResult);

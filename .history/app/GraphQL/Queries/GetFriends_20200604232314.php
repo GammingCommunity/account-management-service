@@ -26,7 +26,7 @@ class GetFriends
 	{
 		$result = [];
 		$currentAccount =  $rootValue['verified_account'];
-		$friendName = $args['friend_name'];
+		$friendName = $args['friend_name'] ?? null;
 
 		if ($currentAccount) {
 			$relationships = AccountRelationship::where('relationship_type', AccountRelationshipType::FRIEND)->where(function ($query) use ($currentAccount) {
@@ -39,34 +39,26 @@ class GetFriends
 		return $result;
 	}
 
-	protected function getFriendsList(int $currentAccountId, $relationships, string $friendName): array
+	protected function getFriendsList(int $currentAccountId, $relationships, string $friendName = null): array
 	{
 		$result = [];
 
 		foreach ($relationships as $relationship) {
+			if ($currentAccountId === $relationship->sender_account_id) {
+				$friend = $relationship->receiver;
+			} else {
+				$friend = $relationship->sender;
+			}
 
-			array_push($result, $this->generateFriendGettingResult($currentAccountId, $relationship));
+			if ($friendName === null || strpos(strtoupper($friend->name), strtoupper($friendName)) !== false) {
+				$friendResult = new FriendGettingResult($friend, $relationship->updated_at);
+				$this->checkPrivacy($friendResult->friend);
+
+				array_push($result, $friendResult);
+			}
 		}
 
 		return $result;
-	}
-
-	protected function generateFriendGettingResult(int $currentAccountId, AccountRelationship $relationship): FriendGettingResult
-	{
-		$friendResult = new FriendGettingResult(null, $relationship->updated_at);
-
-		if ($currentAccountId === $relationship->sender_account_id) {
-			$friend = $relationship->receiver;
-		} else {
-			$friend = $relationship->sender;
-		}
-
-		AccountHelper::setDefaultAvatarIfNull($friend);
-		$friendResult->friend = $friend;
-
-		$this->checkPrivacy($friendResult->friend);
-
-		return $friendResult;
 	}
 
 	protected function checkPrivacy(Account &$lookedAccount)

@@ -43,7 +43,6 @@ class GetFriendRequests
 		foreach ($relationships as $relationship) {
 			$friendResult = new FriendRequestingResult($relationship->sender, $relationship->updated_at);
 
-			AccountHelper::setDefaultAvatarIfNull($friendResult->sender);
 			$this->checkPrivacy($friendResult->sender);
 
 			array_push($result, $friendResult);

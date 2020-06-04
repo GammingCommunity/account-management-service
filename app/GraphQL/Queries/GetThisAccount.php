@@ -24,12 +24,6 @@ class GetThisAccount
 	 */
 	public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): ?Account
 	{
-		$result = $rootValue['verified_account'];
-
-		if($result){
-			AccountHelper::setDefaultAvatarIfNull($result);
-		}
-
-		return $result;
+		return $rootValue['verified_account'];
 	}
 }

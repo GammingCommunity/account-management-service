@@ -6,6 +6,7 @@ use App\Account;
 use App\AccountSetting;
 use App\Common\AuthService\AuthServiceConnection;
 use App\Common\AuthService\AuthServiceResponseStatus;
+use App\Common\Helpers\AccountHelper;
 use App\Enums\ResultEnums\AccountRegistrationResultStatus;
 use App\GraphQL\Entities\Result\AccountRegistrationResult;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -45,7 +46,6 @@ class Register
 		if ($authServiceResponse->status === AuthServiceResponseStatus::SUCCESSFUL) {
 			$result->status = AccountRegistrationResultStatus::SUCCESS;
 			$result->token = $authServiceResponse->data;
-			$this->setDefaultAvatarIfNull($createdAccount);
 			$result->account = $createdAccount;
 		} else {
 			$result->describe = [
@@ -60,10 +60,4 @@ class Register
 		return $result;
 	}
 
-	protected function setDefaultAvatarIfNull(Account &$account)
-	{
-		if ($account->avatar_url == null) {
-			$account->avatar_url = config('default.account_avatar');
-		}
-	}
 }

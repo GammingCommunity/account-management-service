@@ -42,7 +42,6 @@ class Login
 
 			$jwtPayload = new AuthServiceJwtPayload($authServiceResponse->data);
 			$result->account = Account::find($jwtPayload->accountId);
-			AccountHelper::setDefaultAvatarIfNull($result->account);
 		} else if ($authServiceResponse->status === AuthServiceResponseStatus::WRONG_USERNAME) {
 			$result->status = LoggingResultStatus::WRONG_USERNAME;
 		} else if ($authServiceResponse->status === AuthServiceResponseStatus::WRONG_PWD) {

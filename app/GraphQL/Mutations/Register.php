@@ -46,7 +46,6 @@ class Register
 		if ($authServiceResponse->status === AuthServiceResponseStatus::SUCCESSFUL) {
 			$result->status = AccountRegistrationResultStatus::SUCCESS;
 			$result->token = $authServiceResponse->data;
-			AccountHelper::setDefaultAvatarIfNull($createdAccount);
 			$result->account = $createdAccount;
 		} else {
 			$result->describe = [
