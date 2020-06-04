@@ -15,7 +15,8 @@ type Query {
 }
 
 type Mutation {
-    editThisAccount(account: AccountEditingInput!): AccountEditingResult! @authenticate
+    editThisAccount(account: AccountEditingInput!): AccountEditingResult!
+        @authenticate
     register(account: AccountRegistrationInput!): AccountRegistrationResult!
 	sendFriendRequest(receiver_id: Int!): Boolean! @authenticate
 	confirmFriendRequest(sender_id: Int!, is_confirm: Boolean!): Boolean! @authenticate

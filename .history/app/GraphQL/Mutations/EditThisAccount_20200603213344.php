@@ -73,7 +73,7 @@ class EditThisAccount
 			$account->email = $info['email'];
 		}
 		if (isset($info['cover_url'])) {
-			$account->cover_url = $info['cover_url'];
+			$account->email = $info['cover_url'];
 		}
 	}
 
