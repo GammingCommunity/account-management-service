@@ -63,6 +63,7 @@ input AccountSettingInput {
 type AccountLookingResult {
     account: LookedAccount
     relationship: AccountRelationShipType
+	is_following: Boolean
     describe: String
 }
 
@@ -85,6 +86,7 @@ type LookedAccount {
     email: String
     phone: String
     birthmonth: String
+	count_followers: Int
     birthyear: String
     created_at: DateTime!
 }
@@ -97,7 +99,7 @@ type Account {
     describe: String
     email: String
     phone: String
-	count_followers: Int
+	count_followers: Int!
     birthmonth: String
     birthyear: String
     setting: AccountSetting! @hasOne(relation: "setting")
