@@ -30,36 +30,43 @@ class LookAccount
 		$currentAccount = $rootValue['verified_account'];
 
 		if ($currentAccount) {
-			$lookingAccounts = Account::find($ids);
-
-			foreach ($lookingAccounts as $lookingAccount) {
-				$accountLookingResult = new AccountLookingResult();
-
-				$relationship = AccountRelationship::where(function ($query) use ($lookingAccount, $currentAccount) {
-					return $query->where('sender_account_id', $currentAccount->id)->where('receiver_account_id', $lookingAccount->id);
-				})->orWhere(function ($query) use ($lookingAccount, $currentAccount) {
-					return $query->where('sender_account_id', $lookingAccount->id)->where('receiver_account_id', $currentAccount->id);
-				})->first(['relationship_type', 'sender_account_id', 'receiver_account_id']);
-
-				$lookingAccount->setting = $this->createAccountSettingIfItNotExist($lookingAccount);
-				$this->handleBlockedAccount($lookingAccount, $relationship, $accountLookingResult);
-				if ($accountLookingResult->relationship === null) {
-					$this->handleFriendAccount($lookingAccount, $relationship, $accountLookingResult);
-				}
-				if ($accountLookingResult->relationship === null) {
-					$this->handleStrangerAccount($lookingAccount, $relationship, $accountLookingResult);
-				}
-
-				$accountLookingResult->account = $lookingAccount;
-
-				array_push($result, $accountLookingResult);
-			}
+			$result = self::look($currentAccount, Account::find($ids));
 		}
 
 		return $result;
 	}
 
-	protected function createAccountSettingIfItNotExist(Account $account): AccountSetting
+	public static function look(Account $currentAccount, $lookingAccounts): array
+	{
+		$result = [];
+
+		foreach ($lookingAccounts as $lookingAccount) {
+			$accountLookingResult = new AccountLookingResult();
+
+			$relationship = AccountRelationship::where(function ($query) use ($lookingAccount, $currentAccount) {
+				return $query->where('sender_account_id', $currentAccount->id)->where('receiver_account_id', $lookingAccount->id);
+			})->orWhere(function ($query) use ($lookingAccount, $currentAccount) {
+				return $query->where('sender_account_id', $lookingAccount->id)->where('receiver_account_id', $currentAccount->id);
+			})->first(['relationship_type', 'sender_account_id', 'receiver_account_id']);
+
+			$lookingAccount->setting = self::createAccountSettingIfItNotExist($lookingAccount);
+			self::handleBlockedAccount($lookingAccount, $relationship, $accountLookingResult);
+			if ($accountLookingResult->relationship === null) {
+				self::handleFriendAccount($lookingAccount, $relationship, $accountLookingResult);
+			}
+			if ($accountLookingResult->relationship === null) {
+				self::handleStrangerAccount($lookingAccount, $relationship, $accountLookingResult);
+			}
+
+			$accountLookingResult->account = $lookingAccount;
+
+			array_push($result, $accountLookingResult);
+		}
+
+		return $result;
+	}
+
+	protected static function createAccountSettingIfItNotExist(Account $account): AccountSetting
 	{
 		if ($account->setting) {
 			return $account->setting;
@@ -68,7 +75,7 @@ class LookAccount
 		}
 	}
 
-	protected function handleBlockedAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
+	protected static function handleBlockedAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
 	{
 		if (
 			$relasitonship && $relasitonship->relationship_type === AccountRelationshipType::BLOCKED
@@ -79,7 +86,7 @@ class LookAccount
 		}
 	}
 
-	protected function handleFriendAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
+	protected static function handleFriendAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
 	{
 		if (
 			$relasitonship && $relasitonship->relationship_type === AccountRelationshipType::FRIEND
@@ -102,7 +109,7 @@ class LookAccount
 		}
 	}
 
-	protected function handleStrangerAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
+	protected static function handleStrangerAccount(Account &$lookingAccount, ?AccountRelationship $relasitonship, AccountLookingResult &$accountLookingResult)
 	{
 		if ($relasitonship && $relasitonship->relationship_type === AccountRelationshipType::FRIEND_REQUEST) {
 			//	stranger account

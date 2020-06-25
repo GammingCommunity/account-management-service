@@ -53,6 +53,10 @@ class SendFriendRequest
 					'receiver_account_id' => $receiverId,
 					'relationship_type' => AccountRelationshipType::FRIEND_REQUEST
 				]);
+
+				if($result){
+					FollowAccount::follow($receiverId, $currentAccount);
+				}
 			}
 		}
 

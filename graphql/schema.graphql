@@ -7,20 +7,27 @@ scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
 type Query {
     lookAccount(ids: [Int]!): [AccountLookingResult]! @authenticate
-    searchAccounts(key: String!): [AccountLookingResult]! @authenticate 
+    fetchMyFollowers: [AccountLookingResult]! @authenticate
+    searchAccounts(key: String!): [AccountLookingResult]! @authenticate
     getThisAccount: Account! @authenticate
     login(username: String!, pwd: String!): LoggingResult!
     getFriends(friend_name: String): [FriendGettingResult]! @authenticate
     getFriendRequests: [FriendRequestingResult]! @authenticate
+    countMyFollowers: Int! @authenticate
 }
 
 type Mutation {
-    editThisAccount(account: AccountEditingInput!): AccountEditingResult! @authenticate
+    editThisAccount(account: AccountEditingInput!): AccountEditingResult!
+        @authenticate
+    blockAccount(account_id: Int!): ResultCRUD! @authenticate
+    followAccount(account_id: Int!): ResultCRUD! @authenticate
+    unfollowAccount(account_id: Int!): ResultCRUD! @authenticate
     register(account: AccountRegistrationInput!): AccountRegistrationResult!
-	sendFriendRequest(receiver_id: Int!): Boolean! @authenticate
-	confirmFriendRequest(sender_id: Int!, is_confirm: Boolean!): Boolean! @authenticate
-	removeFriendRequest(receiver_id: Int!): Boolean! @authenticate
-	removeFriend(friend_id: Int!): Boolean! @authenticate
+    sendFriendRequest(receiver_id: Int!): Boolean! @authenticate
+    confirmFriendRequest(sender_id: Int!, is_confirm: Boolean!): Boolean!
+        @authenticate
+    removeFriendRequest(receiver_id: Int!): Boolean! @authenticate
+    removeFriend(friend_id: Int!): Boolean! @authenticate
 }
 
 input AccountRegistrationInput {
@@ -48,7 +55,7 @@ input AccountSettingInput {
     birthmonth_privacy: AccountPrivacyType
     email_privacy: AccountPrivacyType
     phone_privacy: AccountPrivacyType
-	allow_email_to_search: Boolean
+    allow_email_to_search: Boolean
     allow_phone_to_search: Boolean
     not_receive_messages_from_strangers: Boolean
 }
@@ -90,6 +97,7 @@ type Account {
     describe: String
     email: String
     phone: String
+	count_followers: Int
     birthmonth: String
     birthyear: String
     setting: AccountSetting! @hasOne(relation: "setting")
@@ -105,7 +113,7 @@ type AccountSetting {
     birthmonth_privacy: AccountPrivacyType!
     email_privacy: AccountPrivacyType!
     phone_privacy: AccountPrivacyType!
-	allow_email_to_search: Boolean!
+    allow_email_to_search: Boolean!
     allow_phone_to_search: Boolean!
     not_receive_messages_from_strangers: Boolean!
 }
@@ -176,4 +184,11 @@ enum AccountPrivacyType {
     PRIVATE @enum(value: -1)
     PUBLIC @enum(value: 1)
     FRIEND @enum(value: 2)
+}
+
+type ResultCRUD {
+    status: Int
+    payload: String
+    success: Boolean!
+    message: String!
 }

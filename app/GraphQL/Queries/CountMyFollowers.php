@@ -8,10 +8,12 @@ use App\AccountRelationship;
 use App\Enums\DbEnums\AccountRelationshipType;
 use App\Enums\DbEnums\AccountPrivacyType;
 use App\Account;
+use App\AccountSetting;
 use App\Common\Helpers\AccountHelper;
+use App\Follow;
 use App\GraphQL\Entities\Result\AccountLookingResult;
 
-class GetThisAccount
+class CountMyFollowers
 {
 	/**
 	 * Return a value for the field.
@@ -20,12 +22,16 @@ class GetThisAccount
 	 * @param  mixed[]  $args The arguments that were passed into the field.
 	 * @param  \Nuwave\Lighthouse\Support\Contracts\GraphQLContext  $context Arbitrary data that is shared between all fields of a single query.
 	 * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
-	 * @return Account|null
+	 * @return int
 	 */
-	public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): ?Account
+	public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): int
 	{
-		$account = $rootValue['verified_account'];
-		$account->count_followers = CountMyFollowers::count($account->id);
-		return $account;
+		$currentAccount = $rootValue['verified_account'];
+
+		return self::count($currentAccount->id);
+	}
+
+	public static function count(Account $accountId): int{
+		return Follow::where('owner_id', '=', $accountId)->select('follower_id')->groupBy('follower_id')->count();
 	}
 }

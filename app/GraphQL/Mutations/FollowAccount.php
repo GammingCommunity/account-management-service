@@ -8,9 +8,11 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use App\AccountRelationship;
 use App\Enums\DbEnums\AccountPrivacyType;
 use App\Enums\DbEnums\AccountRelationshipType;
+use App\Follow;
+use App\GraphQL\Entities\Result\ResultCRUD;
 use Illuminate\Database\Eloquent\Collection;
 
-class RemoveFriendRequest
+class FollowAccount
 {
 	/**
 	 * Return a value for the field.
@@ -19,27 +21,29 @@ class RemoveFriendRequest
 	 * @param  mixed[]  $args The arguments that were passed into the field.
 	 * @param  \Nuwave\Lighthouse\Support\Contracts\GraphQLContext  $context Arbitrary data that is shared between all fields of a single query.
 	 * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
-	 * @return bool
+	 * @return ResultCRUD
 	 */
-	public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): bool
+	public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): ResultCRUD
 	{
-		$result = false;
-		$receiverId = $args['receiver_id'];
+		$receiverId = $args['account_id'];
 		$currentAccount = $rootValue['verified_account'];
+		
+		return self::follow($receiverId, $currentAccount);
+	}
 
-		if ($currentAccount) {
-			$relationship = AccountRelationship::where('relationship_type', AccountRelationshipType::FRIEND_REQUEST)
-				->where('receiver_account_id', $receiverId)
-				->where('sender_account_id', $currentAccount->id)
-				->first();
+	public static function follow(int $ownerId, Account $follower): ResultCRUD{
+		$result = new ResultCRUD();
 
-			if ($relationship) {
-				$result = $relationship->delete();
-
-				if($result){
-					UnfollowAccount::unfollow($receiverId, $currentAccount);
-				}
-			}
+		if (Follow::where('owner_id', '=', $ownerId)->where('follower_id', '=', $follower->id)->get('id')) {
+			$result->success = true;
+			$result->message = 'You are following this person!';
+			
+		} else {
+			$follow = new Follow();
+			$follow->owner_id = $ownerId;
+			$follow->follower_id = $follower->id;
+			
+			$result->success = $follow->save();
 		}
 
 		return $result;
