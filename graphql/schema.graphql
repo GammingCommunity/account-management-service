@@ -8,6 +8,7 @@ scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 type Query {
     lookAccount(ids: [Int]!): [AccountLookingResult]! @authenticate
     fetchMyFollowers: [AccountLookingResult]! @authenticate
+    fetchMyIdols: [AccountLookingResult]! @authenticate
     searchAccounts(key: String!): [AccountLookingResult]! @authenticate
     getThisAccount: Account! @authenticate
     login(username: String!, pwd: String!): LoggingResult!
@@ -63,7 +64,6 @@ input AccountSettingInput {
 type AccountLookingResult {
     account: LookedAccount
     relationship: AccountRelationShipType
-	is_following: Boolean
     describe: String
 }
 
@@ -87,6 +87,7 @@ type LookedAccount {
     phone: String
     birthmonth: String
 	count_followers: Int
+	is_following: Boolean!
     birthyear: String
     created_at: DateTime!
 }

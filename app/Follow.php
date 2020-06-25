@@ -16,4 +16,8 @@ class Follow extends Model
 	{
 		return $this->hasOne(Account::class, 'id', 'follower_id');
 	}
+
+	public static function isFollowing(int $followerId, int $ownerId): bool{
+		return Follow::where('owner_id', '=', $ownerId)->where('follower_id', '=', $followerId)->exists();
+	}
 }

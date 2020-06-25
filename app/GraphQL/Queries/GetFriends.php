@@ -9,6 +9,7 @@ use App\AccountRelationship;
 use App\Common\Helpers\AccountHelper;
 use App\Enums\DbEnums\AccountPrivacyType;
 use App\Enums\DbEnums\AccountRelationshipType;
+use App\Follow;
 use App\GraphQL\Entities\Result\FriendGettingResult;
 
 class GetFriends
@@ -49,7 +50,11 @@ class GetFriends
 			} else {
 				$friend = $relationship->sender;
 			}
-
+			//get followers
+			$friend->count_followers = CountMyFollowers::count($friend->id);
+			//check following
+			$friend->is_following = Follow::isFollowing($currentAccountId, $friend->id);
+			//
 			if ($friendName === null || strpos(strtoupper($friend->name), strtoupper($friendName)) !== false) {
 				$friendResult = new FriendGettingResult($friend, $relationship->updated_at);
 				$this->checkPrivacy($friendResult->friend);

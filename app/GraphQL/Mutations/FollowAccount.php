@@ -40,7 +40,7 @@ class FollowAccount
 			$result->message = 'You are fucking wrong man!!!';
 		} else {
 			if (Account::find($ownerId)) {
-				if (Follow::where('owner_id', '=', $ownerId)->where('follower_id', '=', $followerId)->exists()) {
+				if (Follow::isFollowing($followerId, $ownerId)) {
 					$result->success = true;
 					$result->message = 'You are following this person!';
 				} else {

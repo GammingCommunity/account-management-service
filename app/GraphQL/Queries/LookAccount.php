@@ -10,6 +10,7 @@ use App\Enums\DbEnums\AccountPrivacyType;
 use App\Account;
 use App\AccountSetting;
 use App\Common\Helpers\AccountHelper;
+use App\Follow;
 use App\GraphQL\Entities\Result\AccountLookingResult;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -43,7 +44,11 @@ class LookAccount
 
 		foreach ($lookingAccounts as $lookingAccount) {
 			$accountLookingResult = new AccountLookingResult();
-
+			//get followers
+			$lookingAccount->count_followers = CountMyFollowers::count($lookingAccount->id);
+			//check following
+			$lookingAccount->is_following = Follow::isFollowing($currentAccount->id, $lookingAccount->id);
+			//
 			$relationship = AccountRelationship::where(function ($query) use ($lookingAccount, $currentAccount) {
 				return $query->where('sender_account_id', $currentAccount->id)->where('receiver_account_id', $lookingAccount->id);
 			})->orWhere(function ($query) use ($lookingAccount, $currentAccount) {
