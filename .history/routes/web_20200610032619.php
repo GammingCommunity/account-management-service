@@ -17,8 +17,15 @@ use Illuminate\Http\Resources\Json\Resource;
 Route::get('/', function () {
 	return view('welcome');
 });
-Route::get('/test', 'TestController@index');
-Route::get('/file', 'TestController@file');
+// Route::get('/test', 'TestControl ler@index');
+
+
+
+
+Route::get('/file', 'FileController@index');
+Route::post('/file', 'FileController@upload');
+Route::post('/chat', 'ChattingController@chat');
+Route::get('/chat', 'ChattingController@index');
 
 // Route::options('/', function () {
 // 	return response(null)->header("Access-Control-Allow-Origin", "*")->header("Access-Control-Allow-Methods", "*")->header("Access-Control-Allow-Headers", "*");

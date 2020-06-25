@@ -17,7 +17,7 @@ use Illuminate\Http\Resources\Json\Resource;
 Route::get('/', function () {
 	return view('welcome');
 });
-Route::get('/test', 'TestControl ler@index');
+// Route::get('/test', 'TestControl ler@index');
 
 
 
