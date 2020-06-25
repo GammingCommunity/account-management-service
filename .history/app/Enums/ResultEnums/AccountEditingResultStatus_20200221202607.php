@@ -1,9 +1,0 @@
-<?php
-
-namespace App\Enums;
-
-use App\Enums\AncestorResultEnum;
-
-final class AccountEditingResultStatus extends AncestorResultEnum{
-	const ACC_NOT_FOUND = 1;
-}
