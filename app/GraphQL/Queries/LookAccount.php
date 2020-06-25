@@ -37,7 +37,7 @@ class LookAccount
 		return $result;
 	}
 
-	public static function look(Account $currentAccount, array $lookingAccounts): array
+	public static function look(Account $currentAccount, $lookingAccounts): array
 	{
 		$result = [];
 

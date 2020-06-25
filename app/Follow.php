@@ -14,6 +14,6 @@ class Follow extends Model
 
 	public function follower(): HasOne
 	{
-		return $this->hasOne(Account::class, 'follower_id', 'id');
+		return $this->hasOne(Account::class, 'id', 'follower_id');
 	}
 }

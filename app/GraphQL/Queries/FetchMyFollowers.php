@@ -30,7 +30,14 @@ class FetchMyFollowers
 		$currentAccount = $rootValue['verified_account'];
 
 		if ($currentAccount) {
-			$result = LookAccount::look($currentAccount, Follow::where('owner_id', '=', $currentAccount->id)->select(['follower_id', 'owner_id'])->groupBy('follower_id')->get()->follower());
+			$accounts = [];
+			$follows = Follow::where('owner_id', '=', $currentAccount->id)->select(['follower_id', 'owner_id'])->groupBy('follower_id')->get();
+			
+			foreach ($follows as $folow){
+				array_push($accounts, $folow->follower);
+			}
+
+			$result = LookAccount::look($currentAccount, $accounts);
 		}
 
 		return $result;
