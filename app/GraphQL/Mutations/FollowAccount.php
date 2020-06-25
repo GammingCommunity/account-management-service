@@ -11,6 +11,7 @@ use App\Enums\DbEnums\AccountRelationshipType;
 use App\Follow;
 use App\GraphQL\Entities\Result\ResultCRUD;
 use Illuminate\Database\Eloquent\Collection;
+use PDO;
 
 class FollowAccount
 {
@@ -27,23 +28,31 @@ class FollowAccount
 	{
 		$receiverId = $args['account_id'];
 		$currentAccount = $rootValue['verified_account'];
-		
+
 		return self::follow($receiverId, $currentAccount);
 	}
 
-	public static function follow(int $ownerId, Account $follower): ResultCRUD{
+	public static function follow(int $ownerId, Account $follower): ResultCRUD
+	{
 		$result = new ResultCRUD();
 
-		if (Follow::where('owner_id', '=', $ownerId)->where('follower_id', '=', $follower->id)->get('id')) {
-			$result->success = true;
-			$result->message = 'You are following this person!';
-			
+		if ($ownerId === $follower->id) {
+			$result->message = 'You are fucking wrong man!!!';
 		} else {
-			$follow = new Follow();
-			$follow->owner_id = $ownerId;
-			$follow->follower_id = $follower->id;
-			
-			$result->success = $follow->save();
+			if (Account::find($ownerId)) {
+				if (Follow::where('owner_id', '=', $ownerId)->where('follower_id', '=', $follower->id)->exists()) {
+					$result->success = true;
+					$result->message = 'You are following this person!';
+				} else {
+					$follow = new Follow();
+					$follow->owner_id = $ownerId;
+					$follow->follower_id = $follower->id;
+
+					$result->success = $follow->save();
+				}
+			} else {
+				$result->message = 'You are fucking wrong man!!!';
+			}
 		}
 
 		return $result;

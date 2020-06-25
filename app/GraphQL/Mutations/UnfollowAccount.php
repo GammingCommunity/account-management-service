@@ -27,32 +27,33 @@ class UnfollowAccount
 	{
 		$receiverId = $args['account_id'];
 		$currentAccount = $rootValue['verified_account'];
-		
+
 		return self::unfollow($receiverId, $currentAccount);
 	}
 
-	public static function unfollow(int $ownerId, Account $follower): ResultCRUD{
+	public static function unfollow(int $ownerId, Account $follower): ResultCRUD
+	{
 		$result = new ResultCRUD();
-		$follows = Follow::where('owner_id', '=', $ownerId)->where('follower_id', '=', $follower->id)->get();
 
-		if ($follows) {
-			$result->success = true;
-			$result->message = '';
-			
-			foreach ($follows as $follow){
-				$result->success &= $follow->delete();
-				if(!$result->success){
-					$result->message += $follow->id . ' ';
-				}
-			}
+		if ($ownerId === $follower->id) {
+			$result->message = 'You are fucking wrong man!!!';
 		} else {
-			$result->cussess = true;
-			$result->message = 'You have never followed this person.';
-			$follow = new Follow();
-			$follow->owner_id = $ownerId;
-			$follow->follower_id = $follower->id;
-			
-			$result->success = $follow->save();
+			$follows = Follow::where('owner_id', '=', $ownerId)->where('follower_id', '=', $follower->id)->get('id');
+
+			if (count($follows)) {
+				$result->success = true;
+				$result->message = '';
+
+				foreach ($follows as $follow) {
+					$result->success &= $follow->delete();
+					if (!$result->success) {
+						$result->message += $follow->id . ' ';
+					}
+				}
+			} else {
+				$result->cussess = true;
+				$result->message = 'You have never followed this person.';
+			}
 		}
 
 		return $result;

@@ -41,7 +41,7 @@ class Login
 			$result->token = $authServiceResponse->data;
 
 			$jwtPayload = new AuthServiceJwtPayload($authServiceResponse->data);
-			$result->account = Account::find($jwtPayload->accountId);
+			$result->account = GetThisAccount::get(Account::find($jwtPayload->accountId));
 		} else if ($authServiceResponse->status === AuthServiceResponseStatus::WRONG_USERNAME) {
 			$result->status = LoggingResultStatus::WRONG_USERNAME;
 		} else if ($authServiceResponse->status === AuthServiceResponseStatus::WRONG_PWD) {

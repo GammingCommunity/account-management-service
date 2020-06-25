@@ -9,6 +9,7 @@ use App\Common\AuthService\AuthServiceResponseStatus;
 use App\Common\Helpers\AccountHelper;
 use App\Enums\ResultEnums\AccountRegistrationResultStatus;
 use App\GraphQL\Entities\Result\AccountRegistrationResult;
+use App\GraphQL\Queries\GetThisAccount;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
@@ -46,7 +47,7 @@ class Register
 		if ($authServiceResponse->status === AuthServiceResponseStatus::SUCCESSFUL) {
 			$result->status = AccountRegistrationResultStatus::SUCCESS;
 			$result->token = $authServiceResponse->data;
-			$result->account = $createdAccount;
+			$result->account = GetThisAccount::get($createdAccount);
 		} else {
 			$result->describe = [
 				"author -> authService",

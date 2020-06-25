@@ -11,6 +11,7 @@ use App\Account;
 use App\AccountSetting;
 use App\Common\Helpers\AccountHelper;
 use App\GraphQL\Entities\Result\AccountLookingResult;
+use Illuminate\Database\Eloquent\Collection;
 
 class LookAccount
 {
@@ -36,7 +37,7 @@ class LookAccount
 		return $result;
 	}
 
-	public static function look(Account $currentAccount, $lookingAccounts): array
+	public static function look(Account $currentAccount, Collection $lookingAccounts): array
 	{
 		$result = [];
 

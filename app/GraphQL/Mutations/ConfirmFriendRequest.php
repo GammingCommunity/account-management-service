@@ -32,7 +32,7 @@ class ConfirmFriendRequest
 			$relationship = AccountRelationship::where('relationship_type', AccountRelationshipType::FRIEND_REQUEST)
 				->where('sender_account_id', $senderId)
 				->where('receiver_account_id', $currentAccount->id)
-				->first();
+				->first(['id', 'relationship_type']);
 
 			if ($relationship) {
 				if($isConfirm){

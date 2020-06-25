@@ -31,7 +31,7 @@ class RemoveFriendRequest
 			$relationship = AccountRelationship::where('relationship_type', AccountRelationshipType::FRIEND_REQUEST)
 				->where('receiver_account_id', $receiverId)
 				->where('sender_account_id', $currentAccount->id)
-				->first();
+				->first('id');
 
 			if ($relationship) {
 				$result = $relationship->delete();

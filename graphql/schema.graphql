@@ -190,5 +190,5 @@ type ResultCRUD {
     status: Int
     payload: String
     success: Boolean!
-    message: String!
+    message: String
 }

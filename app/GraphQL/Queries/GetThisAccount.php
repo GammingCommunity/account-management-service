@@ -24,7 +24,10 @@ class GetThisAccount
 	 */
 	public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): ?Account
 	{
-		$account = $rootValue['verified_account'];
+		return self::get($rootValue['verified_account']);
+	}
+
+	public static function get(Account $account): Account{
 		$account->count_followers = CountMyFollowers::count($account->id);
 		return $account;
 	}
