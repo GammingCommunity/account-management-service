@@ -12,8 +12,8 @@ class Follow extends Model
 	protected $fillable = ['follower_id', 'owner_id'];
 	public $timestamps = false;
 
-	public function followers()
-    {
-        return $this->hasMany(Account::class, 'follower_id', 'id');
-    }
+	public function follower(): HasOne
+	{
+		return $this->hasOne(Account::class, 'follower_id', 'id');
+	}
 }
