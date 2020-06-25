@@ -37,7 +37,7 @@ class RemoveFriendRequest
 				$result = $relationship->delete();
 
 				if($result){
-					UnfollowAccount::unfollow($receiverId, $currentAccount);
+					UnfollowAccount::unfollow($receiverId, $currentAccount->id);
 				}
 			}
 		}

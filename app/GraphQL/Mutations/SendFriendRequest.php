@@ -55,7 +55,7 @@ class SendFriendRequest
 				]);
 
 				if($result){
-					FollowAccount::follow($receiverId, $currentAccount);
+					FollowAccount::follow($receiverId, $currentAccount->id);
 				}
 			}
 		}

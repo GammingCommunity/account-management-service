@@ -31,14 +31,14 @@ class UnfollowAccount
 		return self::unfollow($receiverId, $currentAccount);
 	}
 
-	public static function unfollow(int $ownerId, Account $follower): ResultCRUD
+	public static function unfollow(int $ownerId, int $followerId): ResultCRUD
 	{
 		$result = new ResultCRUD();
 
-		if ($ownerId === $follower->id) {
+		if ($ownerId === $followerId) {
 			$result->message = 'You are fucking wrong man!!!';
 		} else {
-			$follows = Follow::where('owner_id', '=', $ownerId)->where('follower_id', '=', $follower->id)->get('id');
+			$follows = Follow::where('owner_id', '=', $ownerId)->where('follower_id', '=', $followerId)->get('id');
 
 			if (count($follows)) {
 				$result->success = true;

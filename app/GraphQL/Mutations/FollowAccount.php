@@ -32,21 +32,21 @@ class FollowAccount
 		return self::follow($receiverId, $currentAccount);
 	}
 
-	public static function follow(int $ownerId, Account $follower): ResultCRUD
+	public static function follow(int $ownerId, int $followerId): ResultCRUD
 	{
 		$result = new ResultCRUD();
 
-		if ($ownerId === $follower->id) {
+		if ($ownerId === $followerId) {
 			$result->message = 'You are fucking wrong man!!!';
 		} else {
 			if (Account::find($ownerId)) {
-				if (Follow::where('owner_id', '=', $ownerId)->where('follower_id', '=', $follower->id)->exists()) {
+				if (Follow::where('owner_id', '=', $ownerId)->where('follower_id', '=', $followerId)->exists()) {
 					$result->success = true;
 					$result->message = 'You are following this person!';
 				} else {
 					$follow = new Follow();
 					$follow->owner_id = $ownerId;
-					$follow->follower_id = $follower->id;
+					$follow->follower_id = $followerId;
 
 					$result->success = $follow->save();
 				}

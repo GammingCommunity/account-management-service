@@ -31,7 +31,8 @@ class CountMyFollowers
 		return self::count($currentAccount->id);
 	}
 
-	public static function count(int $accountId): int{
+	public static function count(int $accountId): int
+	{
 		return Follow::where('owner_id', '=', $accountId)->select(['owner_id', 'follower_id'])->groupBy('follower_id')->get()->count();
 	}
 }

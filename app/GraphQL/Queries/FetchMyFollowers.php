@@ -32,8 +32,8 @@ class FetchMyFollowers
 		if ($currentAccount) {
 			$accounts = [];
 			$follows = Follow::where('owner_id', '=', $currentAccount->id)->select(['follower_id', 'owner_id'])->groupBy('follower_id')->get();
-			
-			foreach ($follows as $folow){
+
+			foreach ($follows as $folow) {
 				array_push($accounts, $folow->follower);
 			}
 

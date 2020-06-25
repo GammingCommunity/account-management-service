@@ -45,7 +45,8 @@ class BlockAccount
 				}
 
 				if ($result->success) {
-					UnfollowAccount::unfollow($accountId, $currentAccount);
+					UnfollowAccount::unfollow($accountId, $currentAccount->id);
+					UnfollowAccount::unfollow($currentAccount->id, $accountId);
 				}
 			}
 		}
