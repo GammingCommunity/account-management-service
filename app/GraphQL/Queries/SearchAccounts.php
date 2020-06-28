@@ -29,28 +29,39 @@ class SearchAccounts
 
 		$result = [];
 		$searchKey = $args['key'];
+		$excludeIds = $args['exclude_ids'] ?? [];
 		$currentAccount = $rootValue['verified_account'];
 
 		if ($currentAccount) {
-			$result = LookAccount::look($currentAccount, $this->findAccounts($currentAccount->id, $searchKey));
+			$result = LookAccount::look($currentAccount, $this->findAccounts($currentAccount->id, $searchKey, $excludeIds));
 		}
 
 		return $result;
 	}
 
-	protected function findAccounts(int $currentAccountId, string $key): array
+	protected function findAccounts(int $currentAccountId, string $key, array $excludeIds): array
 	{
 		$accounts = [];
 
-		foreach ($this->findAccountsByString($currentAccountId, $key) as $account) {
+		foreach ($this->findAccountsByString($currentAccountId, $key, $excludeIds) as $account) {
 			array_push($accounts, $account);
 		}
 
 		return $accounts;
 	}
 
-	protected function findAccountsByString(int $currentAccountId, $key): Collection
+	protected function idArrayToString(array $ids): string{
+		$result = '';
+
+		foreach ($ids as $id){
+			$result .= " `id` != {$id} and";
+		}
+
+		return $result;
+	}
+
+	protected function findAccountsByString(int $currentAccountId, $key, array $excludeIds): Collection
 	{
-		return Account::whereRaw("`id` != {$currentAccountId} and (CONVERT(`id`, CHAR) = '{$key}' or UPPER(`describe`) like UPPER('%{$key}%') or UPPER(`name`) like UPPER('%{$key}%'))")->get();
+		return Account::whereRaw("{$this->idArrayToString($excludeIds)} `id` != {$currentAccountId} and (CONVERT(`id`, CHAR) = '{$key}' or UPPER(`describe`) like UPPER('%{$key}%') or UPPER(`name`) like UPPER('%{$key}%'))")->get();
 	}
 }
